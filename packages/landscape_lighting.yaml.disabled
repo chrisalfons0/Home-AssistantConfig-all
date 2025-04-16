@@ -1,0 +1,55 @@
+#-------------------------------------------
+#  Landscape Lighting Packages
+# 
+#-------------------------------------------
+
+#-------------------------------------------
+group:
+  landscaping:
+    entities:
+      - switch.front_landscaping
+      - switch.back_landscaping
+#-------------------------------------------
+# Automation : Added to Sunset_ON
+# Automation : Added to Sunset_OFF
+# Automation : Added to Away. (Switches off Back Landscaping)
+# Automation : Added to Late Night Helper Outside (Switches Back lights on)
+automation:
+    - alias: 'Landscape lights off'
+      id: 05172967-9309-4624-8633-4f8bce4f3aa1
+      mode: single
+      trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.sleepnumber_carlo_carlo_is_in_bed
+            - binary_sensor.sleepnumber_carlo_stacey_is_in_bed
+          to: 'on'
+
+      condition:
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: binary_sensor.sleepnumber_carlo_carlo_is_in_bed
+              state: 'on'
+            - condition: state
+              entity_id: person.chris
+              state: 'not_home'
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: binary_sensor.sleepnumber_carlo_stacey_is_in_bed
+              state: 'on'
+            - condition: state
+              entity_id: person.lupe
+              state: 'not_home'
+
+      action:
+        - service: switch.turn_off
+          entity_id: switch.back_landscaping
+
+        - wait_template: >-
+           {{ states.group.bed.state == 'on' }}
+        - delay: '0{{ range(0,2) | random | int }}:{{ range(0,5) | random | int }}{{ range(0,9) | random | int }}:00'
+
+        - service: homeassistant.turn_off
+          entity_id: group.landscaping

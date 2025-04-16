@@ -1,0 +1,180 @@
+
+#Master Bedroom
+  - platform: group
+    name: Master Bedroom Nightstand Lights
+    unique_id: 7fd0d0bb-d3f8-458b-9518-ad0f118af6ef
+    entities:
+    - light.nightstand_master_1
+    - light.nightstand_master_2
+
+#  - platform: group
+#    name: Master Bedroom Floorlamp
+#    unique_id: bc4f8ab6-5615-4aff-a241-7228eb4d4c67
+#    entities:
+#    - light.floorlamp_master_1
+#    - light.floorlamp_master_2
+#    - light.floorlamp_master_3
+
+  - platform: group
+    name: Master Bedroom Lights
+    unique_id: b801c7a0-83d0-4fd1-ab58-eb597faeb235
+    entities:
+    - light.master_bedroom_nightstand_lights
+  #  - light.master_bedroom_floorlamp
+    - light.master_bedroom_chandelier
+    - light.master_bedroom_can
+
+#Master Bathroom
+  - platform: group
+    name: Master Bathroom Lights
+    unique_id: b801c7a0-83d0-4fd1-ab58-eb597fafb235
+    entities:
+    - light.master_bathroom_cans
+    - light.master_bathroom_vanity_left
+    - light.master_bathroom_vanity_right
+
+
+#Great Room
+
+  - platform: group
+    name: Great Room Lights
+    unique_id: 7f34887c-0659-4b1d-9000-725dad926cff
+    entities:
+    - light.great_room_cans
+    - light.great_room_chandelier
+    - light.great_room_accent_lights
+
+  - platform: group
+    name: Great Room Accent Lights
+    unique_id: 8dff4d61-60cc-4c9e-81fd-41fff4ab1ec8
+    entities:
+    - light.endtable_greatroom_2
+
+#Gym
+
+  - platform: group
+    name: Gym Lights
+    unique_id: dce1f0fc-55ac-41b2-82b9-093cab168551
+    entities:
+    - light.gym_ceiling_light
+    - light.nightstand_gym
+
+#GuestRooms
+
+  - platform: group
+    name: Guest Room Lights
+    unique_id: a60cfa55-fb0a-44c7-a431-266743fc62b4
+    entities:
+    - light.guest_room_ceiling_light
+    - light.guest_room_nightstand_lights
+
+  - platform: group
+    name: Guest Room Nightstand Lights
+    unique_id: 5fa7ea19-f5a6-4938-baf2-663ed8522d07
+    entities:
+    - light.nightstand_guestroom1_2
+    - light.nightstand_guestroom1_1
+
+#Office
+
+  - platform: group
+    name: Office Lights
+    unique_id: d09996c6-7561-4b13-9076-3ae1fc28b00b
+    entities:
+    - light.lamp_office
+    - light.office_ceiling_light
+
+  - platform: group
+    name: Guest Office Lights
+    unique_id: d09996c6-7561-4b13-9076-3ae1fc28b12b
+    entities:
+    - light.cloffice_light_switch
+    - light.lupe_desk_lamp
+
+#Kitchen
+
+  - platform: group
+    name: Kitchen Lights
+    unique_id: 23994e7d-2311-4930-90d8-5d839bd9e9a2
+    entities:
+    - light.kitchen_can_lights
+    - light.kitchen_island_light_new
+    - light.counter_lights
+
+
+#Dining Room
+
+  - platform: group
+    name: Dining Room Lights
+    unique_id: bf289f9d-9910-4245-b425-51987fe6f3ad
+    entities:
+    - light.dining_room_chandelier
+    - light.dining_room_can_lights
+
+#Outdoors
+
+  - platform: group
+    name: Porch Lights
+    unique_id: e14e7853-35f6-4c26-bc2a-527aea8de381
+    entities:
+    - light.hue_filament_bulb_1
+
+  - platform: group
+    name: Deck Lights
+    unique_id: 0949d0fb-650d-4cb2-9c2c-685f69388d6b
+    entities:
+    - light.deck_sconce
+
+
+  - platform: group
+    name: String Lights
+    unique_id: 776285aa-b3b3-4eae-819f-e93aff7d6a83
+    entities:
+    - light.deck_string_lights_1
+
+  - platform: group
+    name: Outdoor Flood Lights
+    unique_id: 336ec899-5b28-485d-9892-ddb8fdd369e2
+    entities:
+    - light.hue_white_lamp_1
+    - light.hue_white_lamp_1_2
+
+  - platform: group
+    name: Outdoor Backyard Lights
+    unique_id: 11eeffc2-877e-46ba-8a2a-e1c911036df5
+    entities:
+    - light.deck_lights
+    - light.string_lights
+    - light.outdoor_flood_lights
+
+
+  - platform: group
+    name: Outdoor Frontyard Lights
+    unique_id: 458d976e-bba5-4238-95ad-72b90e8c339e
+    entities:
+    - light.porch_lights
+
+
+
+#Holiday
+
+  - platform: group
+    name: Holiday Lights
+    unique_id: 6c0ea2b5-5e6f-4c95-a9b5-c98765153fe8
+    entities:
+    - light.indoor_holiday_lights
+    - light.outdoor_holiday_lights
+
+  - platform: group
+    name: Outdoor Holiday Lights
+    unique_id: c5d34437-4e90-476e-8174-851931587d36
+    entities:
+    - light.outdoor_holiday_lights_porch
+    - light.outdoor_holiday_lights_front_yard
+    - light.roof_holiday_lights
+
+  - platform: group
+    name: Indoor Holiday Lights
+    unique_id: 5adb9a12-9355-4782-bc89-e2039c8f8f54
+    entities:
+    - light.christmas_tree

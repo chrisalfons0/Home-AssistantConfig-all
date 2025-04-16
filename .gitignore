@@ -1,0 +1,67 @@
+# Keep these file types (everything else ignored)
+!*.yaml
+!*.md
+!*.sh
+!*.js
+!.gitignore
+!*/  # Keep directory structure for non-ignored files
+
+# Ignore system logs and build files
+*.log
+*.log.txt
+*.log*
+*.pid
+*.db*
+*.sqlite
+*.pickle
+*.core
+core
+core.*
+*.uuid
+*.xml
+
+# Home Assistant cache and sensitive files
+.cloud/
+.storage/
+.vscode/
+.spotify-token-cache
+home-assistant_v2.*
+.homekit.state
+production_auth.json
+ip_bans.yaml
+ipchange.yaml
+zwave_device_config.yaml
+.ios.conf
+*.conf
+.google.token
+.google_maps_location_sharing.cookies*
+.ring_cache.pickle
+secrets*
+google_calendars.yaml
+google_service_account.json
+service_account.json
+*.token
+*.tokens
+*.cookies
+id_rsa*
+
+# Directories to ignore
+__pycache__/
+deps/
+backups/
+hacs/
+icloud/
+tts/
+.ssh/
+.auth/
+.idea/
+community/
+config/backups/
+config/www/community/
+custom_components/
+notebooks/
+image/
+Abode/
+
+# Disabled components
+*.disabled

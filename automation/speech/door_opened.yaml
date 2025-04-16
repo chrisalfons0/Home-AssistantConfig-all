@@ -1,0 +1,33 @@
+######################################################################
+##  Door Open Announcements
+######################################################################
+- alias: 'Door Opened'
+  id: 18b09251-ea05-46c6-b14f-e7996cc40e89
+  mode: single
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.frontdoor # Front door #
+        - binary_sensor.backdoor # Back door #
+      from: 'off'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_door_open_lights_on
+      state: 'off'
+
+
+
+  action:
+    - service: script.notify_engine
+      data:
+        who: 'chris'
+        value1: "The {{ trigger.to_state.attributes.friendly_name }} has been {{ (trigger.to_state.state)|replace('_', ' ') }}."
+
+#    - service: input_boolean.turn_on
+#      entity_id: input_boolean.alert_mode
+
+#    - service: script.speech_engine
+#      data:
+#        call_window_check: 1
+#        call_inside_weather: 1

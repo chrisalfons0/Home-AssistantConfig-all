@@ -1,0 +1,94 @@
+##############################################################################
+###  Detect when lights are turned on and adjust them accordingly based on time.
+###  Code by @JesseWebDotCom
+##############################################################################
+- alias: detect lights and adjust the brightness when turned on based on time
+  id: 844b6be0-3ba3-4f8a-bbcd-a5ec5abdb88a
+  mode: parallel
+  trigger:
+    - platform: event
+      event_type: state_changed
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.alert_mode
+      state: 'off'
+    - condition: template
+      value_template: "{{ trigger.event.data is not none }}"
+    - condition: template
+      value_template: "{{ trigger.event.data.entity_id is not none }}"
+    - condition: template
+      value_template: "{{ trigger.event.data.entity_id.split('.')[0] == 'light' }}"
+   # Don't change these lights.
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.hue_filament_bulb_1' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.hue_white_lamp_1' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.string_lights'}}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.hue_white_lamp_1_2'}}
+    - condition: template
+      value_template: "{{ trigger.event.data.new_state.state == 'on' }}"
+    - condition: template
+      value_template: "{{ trigger.event.data.old_state.state == 'off' }}"
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.kitchen_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.office_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.great_room_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.master_bedroom_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.guest_room_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.gym_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.dining_room_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.master_bathroom_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.guest_office_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.outdoor_backyard_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.outdoor_frontyard_lights' }}
+    - condition: template
+      value_template: >-
+           {{ trigger.event.data.entity_id != 'light.holiday_lights' }}
+
+
+  action:
+    - service: light.turn_on
+      data:
+        entity_id: "{{ trigger.event.data.entity_id }}"
+        brightness: >
+          {% set hour=states("sensor.time").split(':')[0] | int %}
+          {%- if hour >= 5 and hour < 8  -%}
+            50
+          {%- elif hour >= 8 and hour <20  -%}
+            255
+          {%- elif hour >= 20 and hour <24  -%}
+            128
+          {%- else -%}
+            15
+          {%- endif %}

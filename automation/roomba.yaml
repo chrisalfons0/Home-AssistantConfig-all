@@ -1,0 +1,389 @@
+#################################################################
+## Roomba Automations
+#################################################################
+
+#################################################################
+## Vacuuming Automations
+#################################################################
+        ##########################################################
+        ## Pause Roomba when Doorbell Rings
+        ##########################################################
+
+- alias: Roomba - Pause Roomba when Doorbell Rings
+  id: 37ff7c0f-74c6-46fb-a8fb-daf57978c2eb
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.front_door_ding
+      from: 'off'
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_roomba
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_doorbell
+      state: 'off'
+    - condition: state
+      entity_id: vacuum.chidi
+      state: 'cleaning'
+
+  action:
+    - service: vacuum.pause
+      entity_id:
+        - vacuum.chidi
+    - service: homeassistant.turn_on
+      entity_id:
+        - input_boolean.roomba_pause
+
+        ##########################################################
+        ## Resume Roomba after Doorbell Rings
+        ##########################################################
+
+- alias: Roomba - Resume Roomba after Doorbell Rings
+  id: aa7cd744-baf5-4fde-881e-ef5c4cb6f294
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.front_door_ding
+      from: 'on'
+      to: 'off'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_roomba
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_doorbell
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.roomba_pause
+      state: 'on'
+    - condition: state
+      entity_id: vacuum.chidi
+      state: 'paused'
+
+  action:
+    - service: vacuum.start
+      entity_id:
+        - vacuum.chidi
+    - service: homeassistant.turn_off
+      entity_id:
+        - input_boolean.roomba_pause
+
+
+        ##########################################################
+        ## Shut Off Roombas when Home
+        ##########################################################
+
+- alias: Roomba - Shut Off Roombas when Home
+  id: 651ae38a-7f24-48fe-add9-f79af244a3c5
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: 'not_home'
+      to: 'home'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 45
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_roomba
+      state: 'off'
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: vacuum.chidi
+        state: 'cleaning'
+
+  action:
+    - service: vacuum.return_to_base
+      entity_id:
+        - vacuum.chidi
+
+ 
+        ##########################################################
+        ## Turn Off Roomba when Friends and Family Arrive
+        ##########################################################
+
+- alias: Roomba - Turn Off Roomba when Friends and Family Arrive
+  id: 8c4fb807-6f50-48c3-97fc-58290b7e478c
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: group.friends_and_family
+      from: 'not_home'
+      to: 'home'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 90
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_roomba
+      state: 'off'
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: vacuum.chidi
+        state: 'cleaning'
+
+  action:
+    - service: vacuum.return_to_base
+      entity_id:
+        - vacuum.chidi
+
+#################################################################
+## Lights
+#################################################################
+
+        ##########################################################
+        ## Turn On lights for Roomba Away
+        ##########################################################
+
+- alias: Roomba - Turn On lights for Roomba Away
+  id: f656ba2b-e9ee-482b-a244-9ba059ec26d8
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: vacuum.chidi
+      to: 'cleaning'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_roomba
+      state: 'off'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.family
+        state: 'home'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.friends_and_family
+        state: 'home'
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id: group.interior_lights
+    - service: light.turn_on
+      entity_id:
+        - light.great_room_cans
+        - light.master_bedroom_can
+        - light.great_room_chandelier
+        - light.master_bedroom_chandelier
+      data:
+       brightness_pct: 100
+
+        ##########################################################
+        ## Turn Off lights when Roomba finished Away
+        ##########################################################
+
+- alias: Roomba - Turn Off lights when Roomba finished Away
+  id: c058f18e-fc13-41ae-84c8-29eba56b0581
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: vacuum.chidi
+      to: 'docked'
+      for:
+        hours: 0
+        minutes: 4
+        seconds: 0
+    - platform: state
+      entity_id: vacuum.chidi
+      to: 'paused'
+      for:
+        hours: 0
+        minutes: 4
+        seconds: 0
+    - platform: state
+      entity_id: vacuum.chidi
+      to: 'stopped'
+      for:
+        hours: 0
+        minutes: 24
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_roomba
+      state: 'off'
+    - condition: state
+      entity_id: group.interior_lights
+      state: 'on'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.family
+        state: 'home'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.friends_and_family
+        state: 'home'
+
+  action:
+    - service: homeassistant.turn_off
+      entity_id: group.interior_lights
+
+        ##########################################################
+        ## Turn On lights for Roomba when Dark
+        ##########################################################
+
+- alias: Roomba - Turn On lights for Main Floor Roomba when Dark
+  id: 05beb7cd-a1a5-4352-b6b0-d935c3da3ad6
+
+  trigger:
+    - platform: state
+      entity_id: vacuum.chidi
+      to: 'cleaning'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_roomba
+      state: 'off'
+    - condition: time
+      after: '09:59:00'
+      before: '12:00:00'
+    - condition: or
+      conditions:
+      - condition: numeric_state
+        entity_id: sensor.kitchen_ltr_lux
+        below: 1
+      - condition: numeric_state
+        entity_id: sensor.gym_lth_lux
+        below: 1
+      - condition: numeric_state
+        entity_id: sensor.guest_room_1_lth_lux
+        below: 1
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.friends_and_family
+        state: 'home'
+    - condition: time
+      weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+        - sat
+        - sun
+
+  action:
+    - service: light.turn_on
+      entity_id:
+        - light.great_room_cans
+      data:
+       brightness_pct: 100
+    - service: homeassistant.turn_on
+      entity_id: 
+        - switch.kitchen_can_lights
+        - switch.guestroom1_ceiling_light
+        - switch.gym_ceiling_light
+        - switch.office_ceiling_light_new
+
+
+
+#################################################################
+## Helper Automations
+#################################################################
+
+        ##########################################################
+        ## Set Roomba has Ran for the Day
+        ##########################################################
+
+- alias: Roomba - Set Roomba has Ran for the Day
+  id: 014aa2fe-0e4f-4e1e-bc95-57e073c036bd
+
+  trigger:
+    - platform: state
+      entity_id: vacuum.chidi
+      to: 'cleaning'
+      for:
+        hours: 1
+        minutes: 0
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_roomba
+      state: 'off'
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id:
+        - input_boolean.roomba_ran
+
+        ##########################################################
+        ## Reset Roomba has ran for the day
+        ##########################################################
+
+- alias: Roomba - Reset Roomba has ran for the day
+  id: fc59320c-e80e-40da-85c7-525cf94f0d4e
+
+  trigger:
+   - platform: time
+     at: '00:01:00'
+
+  action:
+    - service: homeassistant.turn_off
+      entity_id:
+        - input_boolean.roomba_ran
+
+#################################################################
+## Notifications
+#################################################################
+
+        ##########################################################
+        ## Roomba is Full iOS Notification
+        ##########################################################
+
+- alias: Roomba - Main Floor Full iOS Notification
+  id: b8344864-a12a-4d20-9a78-259152ab4393
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.chidi_bin_full
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_roomba
+      state: 'off'
+
+  action:
+    - service: script.notify_engine
+      data:
+        who: 'chris'
+        value1: "Chidi is Full, Empty It"
+    - service: script.speech_engine
+      data:
+        value1: >
+          {{ [
+          "Chidi is asking for help.  He needs to be emptied.  Please find him and help him.",
+          "Please be nice and empty Chidi.  He is complaining about a full.",
+          "If you don't want to vacuum, you need to help Chidi.  He is complaining about a full bin and needs help.",
+          "Something is wrong with Chidi.  Please find him and help him.  I have detected a full bin."
+          ] | random }}

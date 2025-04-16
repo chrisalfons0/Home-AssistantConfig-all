@@ -1,0 +1,15 @@
+ - sensor:
+    - unique_id: current_electricity_rate
+      name: Current Electricity Rate
+      unit_of_measurement: "USD/kWh"
+      device_class: monetary
+      state: >
+        {% if is_state('select.monthly_electric', 'Winter Rate') %}
+          {{ 0.057845 }}
+        {% elif is_state('select.monthly_electric', 'Summer Rate First 650') %}
+          {{ 0.0618051 }}
+        {% elif is_state('select.monthly_electric', 'Summer Rate 651-999') %}
+          {{ 0.102654¢ }}
+        {% elif is_state('select.monthly_electric', 'Summer Rate Over 1000') %}
+          {{ 0.106247 }}
+        {% endif %}

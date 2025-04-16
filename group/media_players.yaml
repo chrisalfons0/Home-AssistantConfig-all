@@ -1,0 +1,22 @@
+media_players:
+  entities:
+    - media_player.great_room_tv #chromecast video
+    - media_player.master_bedroom_speakers #chrome cast audio
+    - media_player.google_home #google home
+    - media_player.deck_speakers #chrome cast audio
+    - media_player.master_bath_speakers #chrome cast audio
+    - media_player.dining_room_speakers #chrome cast audio
+    - media_player.master_bedroom_tv #chromecast video
+    - media_player.whole_house #all speakers
+    - media_player.indoors #all indoor speakers
+    - media_player.living_space # dining room & great room
+great_room_tv_activites:
+  name: Great Room TV Activites
+  entities:
+    - switch.greatroom_play_xbox_one
+    - switch.greatroom_watch_smart_tv
+    - switch.greatroom_watch_a_movie
+    - switch.greatroom_watch_a_movie
+    - switch.greatroom_listen_to_music
+    - switch.greatroom_watch_local_tv
+    - switch.greatroom_security_cams

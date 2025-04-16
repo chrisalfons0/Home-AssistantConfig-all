@@ -1,0 +1,25 @@
+######################################################################
+##  Announce when one of the Ecobee kicks in
+## Announce over all Chromecast Audios
+######################################################################
+- alias: 'Ecobee Status'
+  id: 7812fdaf-a3f8-498b-8f07-28e977e528fe
+  mode: single
+  trigger:
+    - platform: state
+      entity_id:
+        - climate.dining_room
+        - climate.hallway
+      attribute: hvac_action
+      from: 'idle'
+
+  action:
+    - service: script.speech_engine
+      data:
+        EcobeeStatus: >
+          {% if trigger.to_state %}
+            The {{ trigger.entity_id.split('.')[1].replace('_', ' ') }} thermostat has now started {{ trigger.to_state.attributes.hvac_action }} mode.
+          {% else %}
+            The H VAC system has turned on.
+          {% endif %}
+        call_window_check: 1

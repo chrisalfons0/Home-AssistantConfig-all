@@ -1,0 +1,21 @@
+interior_lights:
+  name: Interior Lights
+  entities:
+    - light.kitchen_lights
+    - light.office_lights
+    - light.great_room_lights
+    - light.master_bedroom_lights
+    - light.guest_room_lights
+    - light.gym_lights
+    - light.indoor_holiday_lights
+    - light.dining_room_lights
+    - light.guest_office_lights
+    - light.master_bathroom_lights
+
+
+exterior_lights:
+  name: Exterior Lights
+  entities:
+    - light.outdoor_frontyard_lights
+    - light.outdoor_backyard_lights
+    - light.outdoor_holiday_lights

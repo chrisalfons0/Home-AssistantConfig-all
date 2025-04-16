@@ -1,0 +1,152 @@
+#-------------------------------------------
+
+# Added to the LOCK group
+# Added a check lock routine to the Briefing.yaml - Will check locks whenever there is a speech event.
+
+automation:
+  ######################################################################
+  ##  Door Lock Status Announcements - Only during normal hours.
+  ######################################################################
+  - alias: 'Door Locked Announcement'
+    id: a4294b3b-51f3-4e32-8e71-b9ef865add3b
+    trigger:
+      - platform: state
+        entity_id:
+          - lock.backdoor_lock
+          - lock.frontdoor_lock
+        from: 'unlocked'
+        to: 'locked'
+        for: '00:00:30'
+
+    action:
+      - service: script.speech_engine
+        data:
+          DoorLocked: "The {{ trigger.to_state.name }} is now {{ trigger.to_state.state }}."
+
+  - alias: 'Door UnLocked Announcement'
+    id: 5922becc-3249-40ea-bdb4-db97cc40c413
+    trigger:
+      - platform: state
+        entity_id:
+          -  lock.frontdoor_lock
+        from: 'locked'
+        to: 'unlocked'
+        for: '00:10:00'
+
+    action:
+      - service: script.speech_engine
+        data:
+          DoorUnLocked: "The {{ trigger.to_state.name }} has been {{ trigger.to_state.state }} for 10 minutes. I will lock it in 5 minutes if it is still unlocked."
+
+        
+  - alias: 'Auto Lock Front Door after 15 mins'
+    id: 5922becc-3249-40ea-bdb4-db97dd40c413
+    trigger:
+      - platform: state
+        entity_id:
+          - lock.frontdoor_lock
+        from: 'locked'
+        to: 'unlocked'
+        for: '00:15:00'
+    condition:
+      - condition: state
+        entity_id: input_boolean.disable_lock_unlock_doors
+        state: 'off'
+    action:
+      - service: lock.lock
+        entity_id: lock.frontdoor_lock
+
+
+  - alias: 'Auto Lock Doors when armed'
+    id: 5922becc-3249-40ea-bdb4-db97ll39c413
+    trigger:
+      - platform: state
+        entity_id:
+          - alarm_control_panel.abode_alarm
+        from: 'disarmed'
+
+    action:
+      - service: lock.lock
+        entity_id:
+          - lock.backdoor_lock
+          - lock.frontdoor_lock
+          
+          
+          
+  ######################################################################
+  ##  Front Door Lock Usercode Management 
+  ######################################################################
+  
+  
+script:
+
+  set_lock_frontdoor_code:
+    alias: Set Front Door Lock Code
+    sequence:
+    - service: zwave_js.set_lock_usercode
+      target:
+        entity_id: lock.frontdoor_lock
+      data:
+        usercode: >
+          {% if is_state('input_select.code_slot','01') %}
+            {{ "%04d" % states('input_number.front_lock_code_01')|int }}
+          {% elif is_state('input_select.code_slot','02') %}
+            {{ "%04d" % states('input_number.front_lock_code_02')|int }}          
+          {% elif is_state('input_select.code_slot','03') %}
+            {{ "%04d" % states('input_number.front_lock_code_03')|int }}           
+          {% elif is_state('input_select.code_slot','04') %}
+            {{ "%04d" % states('input_number.front_lock_code_04')|int }} 
+          {% elif is_state('input_select.code_slot','05') %}
+            {{ "%04d" % states('input_number.front_lock_code_05')|int }}         
+          {% elif is_state('input_select.code_slot','06') %}
+            {{ "%04d" % states('input_number.front_lock_code_06')|int }}         
+          {% endif %}
+        code_slot: '{{ states("input_select.code_slot") | int }}'
+    mode: single
+    icon: mdi:arrow-right-bold-circle
+  delete_lock_frontdoor_code:
+    alias: Delete Front Door Lock Code
+    sequence:
+    - service: zwave_js.clear_lock_usercode
+      target:
+        entity_id: lock.frontdoor_lock
+      data:
+        code_slot: '{{ states("input_select.code_slot") | int }}'
+    - service: input_number.set_value
+      data:
+        entity_id: >
+          {% if is_state('input_select.code_slot','01') %}
+            input_number.front_lock_code_01
+          {% elif is_state('input_select.code_slot','02') %}
+            input_number.front_lock_code_02
+          {% elif is_state('input_select.code_slot','03') %}
+            input_number.front_lock_code_03
+          {% elif is_state('input_select.code_slot','04') %}
+            input_number.front_lock_code_04
+          {% elif is_state('input_select.code_slot','05') %}
+            input_number.front_lock_code_05
+          {% elif is_state('input_select.code_slot','06') %}
+            input_number.front_lock_code_06
+          {% endif %}
+        value: 0 
+    - service: input_text.set_value
+      data:
+        entity_id: >
+          {% if is_state('input_select.code_slot','01') %}
+            input_text.code_slot_front_user_01
+          {% elif is_state('input_select.code_slot','02') %}
+            input_text.code_slot_front_user_02
+          {% elif is_state('input_select.code_slot','03') %}
+            input_text.code_slot_front_user_03
+          {% elif is_state('input_select.code_slot','04') %}
+            input_text.code_slot_front_user_04
+          {% elif is_state('input_select.code_slot','05') %}
+            input_text.code_slot_front_user_05
+          {% elif is_state('input_select.code_slot','06') %}
+            input_text.code_slot_front_user_06
+          {% endif %}
+        value: ""
+    mode: single
+    icon: mdi:delete-circle
+  
+  

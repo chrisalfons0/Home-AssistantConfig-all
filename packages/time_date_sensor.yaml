@@ -1,0 +1,73 @@
+sensor:
+#   - platform: template
+#     scan_interval: 30000
+#     sensors:
+#       floorplan_date:
+#         friendly_name: 'Date'
+#         entity_id: sensor.time
+#         value_template: >-
+#           {{now().strftime("%A")}}, {{now().strftime("%B")}} {{now().strftime("%d")}}
+#   - platform: template
+#     sensors:
+#       floorplan_time:
+#         friendly_name: 'Time'
+#         entity_id: sensor.time
+#         value_template: >-
+#           {{now().strftime("%-I")}}:{{now().strftime("%M")}} {{now().strftime("%p")}}
+#   - platform: template
+#     sensors:
+#       clock_time:
+#         friendly_name: 'Clock Time'
+#         entity_id: sensor.time
+#         value_template: >-
+#           {{now().strftime("%-I")}}:{{now().strftime("%M")}}
+#   - platform: template
+#     scan_interval: 30000
+#     sensors:
+#       clock_am_pm:
+#         friendly_name: 'AM/PM'
+#         entity_id: sensor.time
+#         value_template: >-
+#           {{now().strftime("%p")}}
+#   - platform: template
+#     scan_interval: 30000
+#     sensors:
+#       clock_day:
+#         friendly_name: 'Day'
+#         entity_id: sensor.time
+#         value_template: >-
+#           {{now().strftime("%A")}}
+#   - platform: template
+#     scan_interval: 30000
+#     sensors:
+#       clock_date:
+#         friendly_name: 'Clock Date'
+#         entity_id: sensor.time
+#         value_template: >-
+#           {{now().strftime("%B")}} {{now().strftime("%d")}} {{now().year}}
+  - platform: template
+    sensors:
+      night_time_sensor:
+        value_template: >-
+            {% if strptime(states('sensor.time'), '%H:%M').hour<5
+            or strptime(states('sensor.time'), '%H:%M').hour>=21 %}
+            night
+            {% else %}
+            day
+            {% endif %}
+  - platform: template
+    sensors:
+      work_time_sensor:
+        value_template: >-
+            {% if  is_state('isweekend_sensor','False')
+            and strptime(states('sensor.time'), '%H:%M').hour>8
+            and strptime(states('sensor.time'), '%H:%M').hour<=18 %}
+            working
+            {% else %}
+            not_working
+            {% endif %}
+  - platform: template
+    sensors:
+      is_weekend_sensor:
+        value_template: >-
+            {{ states('sensor.date') and now().isoweekday() > 5 }}

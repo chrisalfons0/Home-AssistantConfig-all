@@ -1,0 +1,56 @@
+###################################
+##  Start Up Section
+###################################
+
+- alias: Startup Notification and Shut startup lights
+  id: f3f0a8d1-6c40-43e0-91e4-827194f78506
+
+  trigger:
+    - platform: homeassistant
+      event: start
+      
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_startup_notifications
+      state: 'off'
+
+  action:
+    - service: script.notify_engine
+      data:
+        title: 'Home Assistant StartUp'
+        value1: 'Home Assistant is Up and Running!'
+        who: 'chris'
+        apns_id: 'information'
+
+    - service: homeassistant.update_entity
+      entity_id: binary_sensor.updater
+
+#    - service: mqtt.publish
+#      data:
+#        topic: "garadget/GSmall/command"
+#        payload: "get-status"
+
+#    - service: mqtt.publish
+#      data:
+#        topic: "garadget/GLarge/command"
+#        payload: "get-status"
+
+    - service: group.set
+      data:
+        object_id: "arriving"
+        entities: []
+
+    - condition: state
+      entity_id: sun.sun
+      state: 'above_horizon'
+
+    - service: tts.cloud_say
+      data:
+          entity_id:
+          - media_player.office_speaker
+          message: >-
+            Home Assistant has been restarted
+          options:
+            gender: female
+          language: en-GB
+          

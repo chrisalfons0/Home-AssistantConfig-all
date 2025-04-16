@@ -1,0 +1,37 @@
+###################################
+##  Sunrise and Sunset stuff
+###################################
+
+- alias: 'Sunset Stuff on'
+  id: d0db568c-0aa2-42cc-b5be-ba546e39b639
+  trigger:
+    - platform: sun
+      event: sunset
+      offset: "-00:15:00"
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_exterior_on_sunset
+      state: 'off'
+
+
+  action:
+    - delay: '00:{{ (range(1, 20)|random|int) }}:00'
+    - service: script.speech_engine
+      data:
+        call_dark_outside: 1
+#    - service: homeassistant.turn_on
+#      entity_id:
+#        - light.outdoor_backyard_lights
+#        - light.outdoor_frontyard_lights
+    - service: light.turn_on
+      data:
+            entity_id: light.porch_lights
+            entiry_id: light.deck_lights
+    - wait_template: >-
+       {{ states.group.family.state == 'home' }}
+    - service: light.turn_on
+      entity_id:
+       - light.great_room_accent_lights
+       - light.master_bedroom_nightstand_lights
+       - light.guest_room_nightstand_lights

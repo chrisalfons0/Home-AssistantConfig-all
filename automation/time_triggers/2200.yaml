@@ -1,0 +1,27 @@
+######################################################################
+##  Stuff that needs to happen at 10pm.
+######################################################################
+
+- alias: 'Shut down AMP in Great room'
+  id: 3b41321c-8242-4cf5-9a93-b2b7aeeb8ea0
+  trigger:
+    - platform: time
+      at: '22:30:00'
+
+  action:
+    - wait_template: >-
+       {{ not is_state('media_player.master_bedroom_speakers', 'playing') }}
+    - wait_template: >-
+       {{ not is_state('media_player.dining_room_speakers', 'playing') }}
+    - wait_template: >-
+       {{ not is_state('media_player.deck_speakers', 'playing') }}
+    - wait_template: >-
+       {{ not is_state('media_player.whole_house', 'playing') }}
+    - wait_template: >-
+       {{ not is_state('media_player.indoors', 'playing') }}
+    - service: script.speech_engine
+      data:
+        call_no_announcement: 1
+        call_window_check: 1
+    - service: switch.turn_off
+      entity_id: switch.amps

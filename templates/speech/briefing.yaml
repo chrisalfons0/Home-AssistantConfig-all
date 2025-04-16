@@ -1,0 +1,243 @@
+#-------------------------------------------
+# Speech Briefing Macros
+# Description: Contains various macros for generating speech briefings
+#
+# Features:
+# - Weather reports (inside and outside)
+# - Dark outside notification
+# - Holiday and countdown announcements
+# - Air quality reports
+# - Inspirational quotes and facts
+#
+#-------------------------------------------
+
+
+>-
+  {%- macro dark_outside() -%}
+    The sun has set. I will turn on the outside lights.
+  {%- endmacro -%}
+
+  {%- macro responsibilities() -%}
+    {% set day_of_week = now().strftime('%a') %}
+    {% if day_of_week in ['Test', 'Sun'] %}
+    Both Recycling and Garbage goes out.
+    {% if day_of_week == 'Sun' %}
+        Both Recycling and Garbage goes out.
+    {% endif %}
+    {% endif %}
+  {%- endmacro -%}
+
+  {%- macro inside_weather() -%}
+     Inside the house, it is {{ states.climate.hallway.attributes['current_temperature'] }} degrees with {{ states.climate.hallway.attributes['current_humidity'] }} percent humidity. [Only mention humidity if it seems unusually high]
+  {%- endmacro -%}
+
+  {% macro outside_weather() %}
+    [Here is the current weather outside]
+    {%- for entity in states.sensor if 'darksky' in entity.entity_id %}
+        {%- set state = entity.state %}
+        {%- set unit = entity.attributes.unit_of_measurement if 'unit_of_measurement' in entity.attributes else '' %}
+        {%- set friendly_name = ' '.join(entity.attributes.friendly_name.split(' ')[1:]) %}
+        {%- if state not in ['0', '0.0', 'none'] and 'UV Index' not in friendly_name %}
+        {%- if 'Temperature' in friendly_name -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- elif 'Minutely' in friendly_name -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- elif 'Precip' in friendly_name -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- elif 'Wind Speed' in friendly_name and state | float > 15 -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- elif 'Cloud Coverage' in friendly_name and state | float > 75 -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- elif 'Humidity' in friendly_name and (state | float < 50 or state | float > 85) -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- elif 'Nearest Storm Distance' in friendly_name and state | float <= 10 -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- endif -%}
+        {%- endif %}
+    {% endfor -%}
+  {%- endmacro -%}
+
+  {%- macro lightning() -%}
+     There have been {{ states('sensor.blitzortung_lightning_counter') }} lightning strikes detected within {{(states('sensor.blitzortung_lightning_distance') | int(9999)/ 1.69) | round (1, 'floor')}} Miles of our House.
+     Nearest Storm Distance : {{states('sensor.dark_sky_nearest_storm_distance')}} Miles.
+  {%- endmacro -%}
+
+  {%- macro fridge() -%}
+    The internal temperature of the refrigerator is currently {{ states('number.fridge_refrigerator_temperature') }} degrees. The freezer temperature is {{ states('number.fridge_freezer_temperature') }} degrees and the chiller temperature is {{ states('number.fridge_chiller_temperature') }} degrees. {% if is_state('binary_sensor.fridge_refrigerator_door', 'on') %}The fridge door is currently open.{% endif %}
+  {%- endmacro -%}
+
+  {%- macro light_check() -%}
+  {% if states.group.all_lights.state != 'off' -%}
+      There are
+  {% for state in states.light if state.state == 'on' -%}
+      {%- if loop.last -%}
+      {{ loop.index }}
+      {%- endif -%}
+  {%- endfor %}
+  lights on right now.
+  {% set comma = joiner(', ') %}
+  The
+  {% for group in states.group|groupby('state') -%}
+      {%- for entity in group.list if entity.state == 'on'
+      and entity.name.split(' ')[1]|lower == 'lights'
+      and entity.name.split(' ')[0]|lower != 'all'
+      and entity.name.split(' ')[0]|lower != 'interior'
+      -%}
+      {{ 'and' if loop.last and not loop.first else comma() }}
+      {{ entity.name|replace('Lights','')}}
+      {%- endfor -%}
+  {%- endfor -%}
+  lights are on.
+  {%- endif -%}
+  {%- endmacro -%}
+
+  {%- macro window_check() -%}
+  {% if states.group.entry_points.state != 'off' -%}
+      {% set comma = joiner(', ') %}
+      The
+      {% for state in states.binary_sensor if state.state == 'on' and state.attributes.device_class == 'window' -%}
+      {%- endfor %}
+      {% for group in states.binary_sensor|groupby('state') -%}
+      {%- for entity in group.list  if entity.state == 'on' and entity.attributes.device_class == 'window'  -%}
+          {{ ' and' if loop.last and not loop.first else comma() }}
+          {{ entity.attributes.friendly_name }}
+      {%- endfor -%}
+      {% endfor %}
+      need to be closed.
+  {%- endif -%}
+  {%- endmacro -%}
+
+  {%- macro lock_check() -%}
+  {% if states.group.locks.state !='locked' -%}
+      The
+      {%- for state in states.lock -%}
+      {%- endfor %}
+      {% for group in states.lock|groupby('state') -%}
+      {%- for entity in group.list  if entity.state == 'unlocked' -%}
+          {{ ' and' if loop.last and not loop.first }}
+          {{ entity.attributes.friendly_name }}
+      {%- endfor -%}
+      {%- endfor %}
+      needs to be locked.
+  {%- endif -%}
+  {%- endmacro -%}
+
+  {%- macro moon() -%}
+        {% if (now().hour == 17) %}
+        Current Moon phase: {{ states('sensor.moon') }} [Give a fact and mention today's phase]
+        {% endif %}
+  {%- endmacro -%}
+
+  {%- macro uv() -%}
+  {% if states.sensor.dark_sky_uv_index.state|int(9999)>= 6 and states.sensor.dark_sky_uv_index.state|int(9999)<= 7.9 %}
+      Today's UV index is {{ states.sensor.dark_sky_uv_index.state }}.  You should wear sunscreen if going outside.
+  {% elif states.sensor.dark_sky_uv_index.state|int(9999)>= 8 and states.sensor.dark_sky_uv_index.state|int(9999)<=10.9 %}
+      Today's UV index is {{ states.sensor.dark_sky_uv_index.state }}.  This is VERY HIGH. Be sure wear sunscreen and re-apply.
+  {% elif states.sensor.dark_sky_uv_index.state|int(9999)>= 11 %}
+      Today's UV index is {{ states.sensor.dark_sky_uv_index.state }}.  This is EXTREME. You should be very cautious going outside.
+  {% endif %}
+  {%- endmacro -%}
+
+  {% macro inspirational_quote() %}
+        [Include an inspirational quote relevant to the day or situation at the end of the message. "]
+  {% endmacro %}
+
+  {% macro fact_of_the_day() %}
+        [Include a fact about something that happened in the past on this day at the end of the message]
+  {% endmacro %}
+
+  {# a macro that removes all newline characters, empty spaces, and returns formatted text and replaces underscores with spaces  #}
+  {%- macro cleanup(data) -%}
+    {%- for item in data.split("\n")  if item | trim != "" -%}
+    {{ item | trim | replace("_", " ") }} {% endfor -%}
+  {%- endmacro -%}
+
+  {# ********************************************* #}
+  {#  ******** Start the Speech routines ********  #}
+  {# ********************************************* #}
+
+  {# a macro to call all macros :)  #}
+  {%- macro mother_of_all_macros() -%}
+
+    {# Augmenting the System Prompt for OpenAI #}
+    {% set current_date = now() %}
+    {% set month = current_date.strftime('%B') %}
+    {% set day_of_week = now().strftime('%a') %}
+    {% set hour = now().hour %}
+    {% set minute = now().minute %}
+    {% set day = current_date.strftime('%d') %}
+    {% set year = current_date.strftime('%Y') %}
+    {% set time = current_date.strftime('%I:%M %p') %}
+    Current date time: {{ month }} {{ day }}, {{ year }} {{ time }}
+    Residents: Location
+    - Chris: {{ states('person.chris') }} at {{ states('sensor.chris_place') if states('sensor.chris_place') != unknown else 'Away' }}
+    and our dogs Harper and Theo: Always home.
+    Previous broadcast: "{{ state_attr('sensor.openai_response', 'response') }}"
+    [Announce where the Residents location is if they are not at home. Avoid repeating information from the Previous broadcast if it was within the hour]
+
+    New Information:
+    {% if call_no_announcement != 1 %}
+      {% if now().strftime('%H')|int(9999)< 12 and now().strftime('%H')|int(9999)> 6 %}
+          Good morning.
+      {% elif now().strftime('%H')|int(9999)>= 12 and now().strftime('%H')|int(9999)< 17 %}
+          Good afternoon.
+      {% else %}
+          Good evening.
+      {% endif %}
+    {% endif %}
+
+    {# Called from Annoucenments #}
+    {{ personarriving | default }}
+
+    {# Called from Ecobee when thermostats turn on #}
+    {{ EcobeeStatus | default }}
+
+    {% if call_inside_weather == 1 %}
+    {{ inside_weather() }}
+    {% endif %}
+
+    {% if call_outside_weather == 1 and is_state('sun.sun', 'above_horizon') %}
+    {{ outside_weather() }}
+    {% endif %}
+
+    {% if (states('sensor.blitzortung_lightning_counter')|int(0)) > 0 %}
+    {{ lightning() }}
+    {% endif %}
+
+    {% if (states('number.fridge_refrigerator_temperature')|int(0) > 55 or states('number.fridge_freezer_temperature')|float > 5 or states('number.fridge_chiller_temperature')|float > 50 or is_state('binary_sensor.fridge_refrigerator_door', 'on')) and no_fridge != 1 %}
+    {{ fridge() }}
+    {% endif %}
+
+    {{ DoorOpened | default }}
+    {{ DoorClosed | default }}
+
+    {{ lock_check() }}
+      {# These two lock statements are sent directly from automations. #}
+    {{ DoorLocked | default }}
+    {{ DoorUnLocked | default }}
+
+    {% if call_dark_outside == 1 %}
+    {{ dark_outside() }}
+    {% endif %}
+
+    {% if (call_window_check == 1 or is_state('sun.sun', 'below_horizon')) or is_state('group.entry_points', 'on') %}
+    {{ window_check() }}
+    {% endif %}
+
+    {% if call_light_check == 1 %}
+    {{ light_check() }}
+    {% endif %}
+
+    {% if call_responsibilities == 1 %}
+    {{ responsibilities() }}
+    {% endif %}
+
+    {% if value1 is not none %}
+    {{ value1 | default }}
+    {% endif %}
+
+    {# call a Random fact about the house or inspiration quote #}
+    {{ ([moon, uv,  outside_weather, outside_weather, inspirational_quote, fact_of_the_day]|random)() }}
+
+  {%- endmacro -%}
+  {{- cleanup(mother_of_all_macros()) -}}

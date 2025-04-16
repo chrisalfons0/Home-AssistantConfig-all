@@ -1,0 +1,62 @@
+automation:
+  - alias: 'Motion in the Office - Turn on Light'
+    id: 5a8e9dc3-a851-4cce-a054-d96f599cb1f5
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.office_occupancy_2
+        to: 'on'
+        from: 'off'
+
+    condition:
+      - condition: state
+        entity_id: group.family
+        state: 'home'
+      - condition: state
+        entity_id: light.office_lights
+        state: 'off'
+      - condition: numeric_state
+        entity_id: sensor.office_lth_lux
+        below: 3.0
+      - condition: state
+        entity_id: input_boolean.guest_mode
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.disable_occupancy
+        state: 'off'
+#      - condition: or
+#        conditions:
+#          - condition: time
+#            after: '18:00:00'
+#          - condition: state
+#            entity_id: sun.sun
+#            state: 'below_horizon'
+#          - condition: state
+#            entity_id: input_boolean.daylight_override
+#            state: 'on'
+
+
+    action:
+      - service: homeassistant.turn_on
+        entity_id: switch.office_ceiling_light_new
+
+  - alias: 'Motion in the Office - Turn off Light'
+    id: 346d8210-2160-4911-8be0-1ad696cc69d1
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.office_occupancy_2
+        to: 'off'
+        from: 'on'
+        for:
+          minutes: 15
+
+    condition:
+      - condition: state
+        entity_id: switch.office_ceiling_light_new
+        state: 'on'
+
+
+    action:
+      - service: homeassistant.turn_off
+        entity_id: switch.office_ceiling_light_new

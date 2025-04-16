@@ -1,0 +1,53 @@
+######################################################################################################
+###Script to send notifications to the ChromeCast Audios during normal hours and only when we are home! Call like this:
+  # action:
+    # service: script.speech_engine
+    # data:
+    #   call_no_announcement:
+    #   call_dark_outside:
+    #   call_window_check:
+    #   call_light_check
+    #   call_inside_weather
+    #   call_outside_weather
+######################################################################################################
+
+# Define the "speech_engine" script
+speech_engine:
+  # Set the mode to "queued"
+  mode: queued
+  # Define the sequence of actions to be performed
+  sequence:
+    # If the state of the "group.family" entity is "home" or the state of the "input_boolean.guest_mode" entity is "on", proceed with the script
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: group.family
+          state: 'home'
+        - condition: state
+          entity_id: input_boolean.guest_mode
+          state: 'on'
+
+    # Run the "script.speech_processing" service with the specified media player and speech message
+    - service: script.speech_processing
+      data:
+        # Set the entity ID for the media players to be controlled
+        # If the "media_player" variable is not defined, set it to a list of media player entities
+        # If the "media_player" variable is a list, convert it to a comma-separated string
+        media_player: >-
+            {% if media_player | length == 0 %}
+              {% set media_player = [
+                'media_player.kitchen_speaker'
+              ] %}
+            {% endif %}
+            {% if media_player is not string and media_player is sequence %}
+              {% set media_player = media_player|join(', ') %}
+            {% endif %}
+            {{ media_player }}
+        # Include the speech message from the "speech/briefing.yaml" template file
+        speech_message: !include ../templates/speech/briefing.yaml
+
+    # Turn off the "input_boolean.home_stats" input booleans
+    - service: input_boolean.turn_off
+      data:
+        entity_id:
+          - input_boolean.home_stats

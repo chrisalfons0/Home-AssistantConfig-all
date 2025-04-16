@@ -1,0 +1,161 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+#Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+#   ssl_certificate: /data/letsencrypt/live/medlockpark.duckdns.org/fullchain.pem
+#   ssl_key: /data/letsencrypt/live/medlockpark.duckdns.org/privkey.pem
+
+
+http:
+#  base_url: !secret http_base_url
+#  ssl_certificate: !secret ssl_certificate
+#  ssl_key: !secret ssl_key
+  cors_allowed_origins:
+    - https://google.com
+    - https://www.home-assistant.io
+#  trusted_networks:
+#    - 192.168.160.30
+#    - 192.168.160.0/24
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
+
+homeassistant:
+  name: Home
+  unit_system: us_customary
+  time_zone: !secret home_timezone
+  customize: !include_dir_merge_named customize
+  currency: USD
+  country: US
+  packages: !include_dir_named packages
+  auth_providers:
+   - type: homeassistant
+   - type: trusted_networks
+     trusted_networks:
+       - 192.168.160.0/24
+#      - !secret external_ip
+     allow_bypass_login: true
+  external_url: !secret external_url
+  internal_url: !secret internal_url
+  customize_domain:
+    automation:
+      initial_state: true
+
+#################################################################
+## Notifications
+#################################################################
+notify:
+  - platform: group
+    name: chris_devices
+    services:
+      - service: mobile_app_ipad
+      - service: mobile_app_chris_iphone
+  - platform: group
+    name: ios_family
+    services:
+      - service: mobile_app_lupe_iphone
+      - service: mobile_app_iphone
+      - service: mobile_app_mgmonterroso
+      - service: mobile_app_ipad
+      - service: mobile_app_chris_iphone
+
+  - platform: syslog
+    name: nas_ha_syslog
+
+
+system_health:
+network:
+stream:
+zeroconf:
+config:
+
+####################################################
+#                                                  #
+#                 Customizations                   #
+#                                                  #
+####################################################
+
+
+wemo:
+  discovery: false
+  static:
+    - 192.168.10.22
+    - 192.168.10.26
+    - 192.168.10.28
+
+
+#google:
+#  client_id: !secret google_calander_client_id
+#  client_secret: !secret google_calander_secret
+
+history:
+
+logbook:
+  exclude:
+    entities:
+      - automation.detect_lights_and_adjust_the_brightness_when_turned_on_based_on_time
+      - sensor.pi_hole_ads_blocked_today
+      - sensor.pi_hole_ads_percentage_blocked_today
+      - sensor.pi_hole_dns_queries_today
+      - sensor.time
+      - sensor.date
+      - media_player.deck_speakers
+      - media_player.dining_room_speakers
+      - media_player.google_home
+      - media_player.great_room_speakers
+      - media_player.great_room_tv
+      - media_player.kitchen_speaker
+      - media_player.home_mini
+      - py.warnings
+      - sensor.low_battery
+      - sensor.mgmonterroso_battery_state_3
+      - sensor.chriss_iphone_13_pro_battery_state
+      - sensor.date_time
+    domains:
+      - updater
+
+
+###################################################
+#                                                 #
+#                   Prometheus                    #
+#                                                 #
+###################################################
+prometheus:
+  namespace: hass
+  component_config_glob:
+    sensor.*_hum:
+      override_metric: humidity_percent
+    sensor.*_temp:
+      override_metric: temperature_c
+    sensor.temperature*:
+      override_metric: temperature_c
+    sensor.*_bat:
+      override_metric: battery_percent
+  filter:
+    include_domains:
+      - sensor
+    exclude_entity_globs:
+      - sensor.weather_*
+
+
+
+###################################################
+#                                                 #
+#                   Includes                      #
+#                                                 #
+###################################################
+
+group: !include_dir_merge_named group
+sensor: !include_dir_merge_list sensor
+automation: !include_dir_merge_list automation
+scene: !include_dir_merge_list scene
+script: !include_dir_merge_named script
+input_boolean: !include_dir_merge_named input_boolean
+input_select: !include input_select.yaml
+logger: !include logger.yaml
+recorder: !include recorder.yaml
+shell_command: !include_dir_merge_named shell_command
+switch: !include switch.yaml
+binary_sensor: !include binary_sensor.yaml
+cover: !include cover_group.yaml
+light: !include light_groups.yaml

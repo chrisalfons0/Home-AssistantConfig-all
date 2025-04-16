@@ -1,0 +1,104 @@
+
+        #################################################################
+        ## Turn On Guest Mode if Overnight Guest Mode Turned On
+        #################################################################
+
+- alias: System - Turn On Guest Mode if Overnight Guest Mode Turned On
+  id: 6a996a46-bfdb-4a51-909f-a0f76e3a89c3
+  trigger:
+    - platform: state
+      entity_id: input_boolean.overnight_guest_mode
+      to: 'on'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'
+
+  action:
+    - service: homeassistant.turn_on
+      target:
+        entity_id: 
+          - input_boolean.guest_mode
+
+        #################################################################
+        ## Turn Off Guest Mode if Overnight Guest Mode Turned Off
+        #################################################################
+
+- alias: System - Turn Off Guest Mode if Overnight Guest Mode Turned Off
+  id: db80de92-81bc-4831-9348-6ae4c7c8ba70
+
+  trigger:
+    - platform: state
+      entity_id: input_boolean.overnight_guest_mode
+      to: 'off'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'on'
+
+  action:
+    - service: homeassistant.turn_off
+      target:
+        entity_id: 
+          - input_boolean.guest_mode
+          
+          
+        ##########################################################
+        ## Reset Guest Mode at 7a
+        ##########################################################
+
+- alias: System - Reset Guest Mode at 7a
+  id: a11875bf-2211-4f85-ae46-d8b8e15c64e9
+
+  trigger:
+   - platform: time
+     at: '07:00:00'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.overnight_guest_mode
+      state: 'off'
+
+  action:
+    - service: homeassistant.turn_off
+      entity_id:
+        - input_boolean.guest_mode
+
+        ##########################################################
+        ## Guest Mode is Still On
+        ##########################################################
+
+- alias: System - Guest Mode is Still On
+  id: e7998388-1f6e-42d5-9dc4-e4f0801cd583
+
+  trigger:
+   - platform: time
+     at: '09:00:00'
+
+  condition:
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: input_boolean.overnight_guest_mode
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.guest_mode
+        state: 'on'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: 'Guest Mode is Still On'
+        data:
+          tag: homeassistant
+          group: system

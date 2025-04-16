@@ -1,0 +1,18 @@
+input_select_harmony:
+  alias: "Start Remote activity from input select"
+  sequence:
+      service: remote.turn_on
+      data_template:
+        entity_id: remote.greatroom
+        activity: >
+          {% if is_state("input_select.great_room_tv_remote", "PowerOff") %}
+              -1
+          {% elif is_state("input_select.great_room_tv_remote", "Watch TV") %}
+              29083652
+          {% elif is_state("input_select.great_room_tv_remote", "Play Xbox") %}
+              22107236
+          {% elif is_state("input_select.great_room_tv_remote", "Play Blueray") %}
+              29387873
+          {% elif is_state("input_select.great_room_tv_remote", "Show Security Cams") %}
+              33200370
+          {% endif %}

@@ -1,0 +1,71 @@
+        ######################################################################
+        ##  AUTOMATIC DO NOT DISTURB FOR CHRIS' OFFICE  
+        ##  
+        ##  This automation activates "Do Not Disturb" mode when Chris is home  
+    ##  and using his MacBook’s camera, microphone, or focus mode for at  
+    ##  least 1 minute.  
+    ##  
+    ##  - Triggers when the camera, microphone, or focus mode is in use.  
+    ##  - Ensures Chris is home and the MacBook is active before activating.  
+    ##  - Prevents re-triggering if "Do Not Disturb" is already on.  
+    ######################################################################
+
+- alias: System - Turn On Chris Office Do not Disturb when MacBook AV Input On
+  id: '82924017-c49a-408b-a1f4-6eba314de5dc'
+  mode: single
+
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.us_c02dmbd1ml7h_3_camera_in_use
+        - binary_sensor.us_c02dmbd1ml7h_3_audio_input_in_use
+        - binary_sensor.us_c02dmbd1ml7h_3_focus
+      to: 'on'
+      for: "00:01:00"  # Waits for 1 minute before triggering
+
+  condition:
+    - condition: state
+      entity_id: person.chris
+      state: 'home'  # Ensures Chris is home
+    - condition: state
+      entity_id: binary_sensor.us_c02dmbd1ml7h_3_active
+      state: 'on'  # Ensures MacBook is active
+    - condition: state
+      entity_id: input_boolean.chris_office_do_not_disturb
+      state: 'off'  # Prevents re-triggering if already in Do Not Disturb mode
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id: input_boolean.chris_office_do_not_disturb # Activates Do Not Disturb
+
+        #################################################################
+        ## Turn Off Chris Office Do not Disturb when MacBook AV Input Off
+        #################################################################
+
+- alias: System - Turn Off Chris Office Do not Disturb when MacBook AV Input Off
+  id: '24e86547-f252-4c30-abd8-ac8fce1dbf0b'
+  mode: single
+
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.us_c02dmbd1ml7h_3_camera_in_use
+        - binary_sensor.us_c02dmbd1ml7h_3_audio_input_in_use
+        - binary_sensor.us_c02dmbd1ml7h_3_focus
+      to: 'off'
+      for: "00:05:00"  # Ensures it's inactive for 5 minute before turning off
+
+  condition:
+    - condition: state
+      entity_id: person.chris
+      state: 'home'  # Ensures Chris is still home
+    - condition: state
+      entity_id: binary_sensor.us_c02dmbd1ml7h_3_active
+      state: 'off'  # Ensures MacBook is no longer active
+    - condition: state
+      entity_id: input_boolean.chris_office_do_not_disturb
+      state: 'on'  # Prevents re-triggering if already off
+
+  action:
+    - service: homeassistant.turn_off
+      entity_id: input_boolean.chris_office_do_not_disturb # Deactivates Do Not Disturb

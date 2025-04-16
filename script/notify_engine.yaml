@@ -1,0 +1,89 @@
+######################################################################################################
+### Script for Sending Notifications to Mobile Phones
+# This script (`notify_engine`) and its variant (`notify_engine_two_button`) are designed to send
+# customized notifications to specified recipients in Home Assistant.
+# - The script dynamically chooses the notification service based on the 'who' parameter,
+#   allowing targeting individuals like Stacey, Carlo, or groups like family or parents.
+# - Notifications include a title and a composite message from 'value1', 'value2', and 'value3'.
+# - The script can optionally attach camera snapshots, specify notification groups, and set interruption levels.
+
+# Usage:
+# To call this script, specify the action as `script.notify_engine` or `script.notify_engine_two_button`
+# and provide the necessary data parameters:
+#   - 'title': The notification title.
+#   - 'value1', 'value2', 'value3': Components of the message.
+#   - 'who': Recipient identifier (e.g., 'chris', 'user2', 'guest', 'family').
+#   - 'camera_entity': Camera entity ID for snapshots (optional).
+#   - 'group': Notification group (optional, defaults to 'information').
+#   - 'level': Interruption level for the notification (optional, defaults to 'active').
+
+# The 'notify_engine_two_button' variant includes additional parameters for two interactive buttons:
+#   - 'title1', 'title2': Titles for the action buttons.
+#   - 'action1', 'action2': Actions to be performed when buttons are pressed.
+#   - 'icon1', 'icon2': Icons for the buttons (optional).
+#   - 'destructive1', 'destructive2': Boolean flags to mark buttons as destructive (optional).
+
+# Author: @CCOSTAN
+# Original Repository: https://github.com/CCOSTAN/Home-AssistantConfig
+# Video Tutorial for Android Compatibility: https://youtu.be/mK1wdpxhLbM
+######################################################################################################
+
+
+notify_engine:
+  sequence:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.text_notifications
+          state: 'on'
+
+    - service: >
+          {% if who == 'chris' %}
+            notify.mobile_app_chris_iphone
+          {% elif who == 'user2' %}
+            notify.mobile_app_ipad_2
+          {% elif who == 'family' %}
+            notify.ios_family
+          {% else %}
+            notify.ios_family
+          {% endif %}
+      data:
+        title: "{{ title }}"
+        message: "{{ value1 }} {{ value2 }} {{ value3 }}"
+        data:
+          group: "{{ group|default('information') }}"
+          interuption_level: "{{ level|default('active') }}"
+          entity_id: "{{ camera_entity|default('', true) }}"
+
+notify_engine_two_button:
+  sequence:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.text_notifications
+          state: 'on'
+
+    - service: >
+          {% if who == 'chris' %}
+            notify.mobile_app_chris_iphone
+          {% elif who == 'user2' %}
+            notify.mobile_app_ipad_2
+          {% elif who == 'family' %}
+            notify.ios_family
+          {% else %}
+            notify.ios_family
+          {% endif %}
+      data:
+        message: "{{ value1 }} {{ value2 }} {{ value3 }}"
+        title: "{{ title|default('', true) }}"
+        data:
+          actions:
+            - title: "{{ title1|default('', true) }}"
+              action: "{{ action1 }}"
+              icon: "{{ icon1|default ('sfsymbols:house.circle', true) }}"
+              destructive: "{{ destructive1|default('false', true) }}"
+            - title: "{{ title2|default('', true) }}"
+              action: "{{ action2 }}"
+              icon: "{{ icon2|default ('sfsymbols:house.circle', true) }}"
+              destructive: "{{ destructive2|default('false', true) }}"
+          group: "{{ group|default('information'),true }}"

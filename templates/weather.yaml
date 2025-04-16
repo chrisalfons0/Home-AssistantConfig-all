@@ -1,0 +1,53 @@
+  - sensor:
+    - name: "Current Interior Temperature"
+      unique_id: 7b80fc0b-9f9c-40a7-907e-a411532e96b8
+      unit_of_measurement: "°F"
+      state_class: measurement
+      device_class: temperature
+      state: >
+        {{ states('sensor.current_interior_temperature_raw') }}
+
+  - sensor:
+    - name: "Current Interior Humidity"
+      unique_id: 7ee7150ff-29a0-4431-b0be-9688f0a78b3a
+      unit_of_measurement: "%"
+      state_class: measurement
+      device_class: humidity
+      state: >
+        {{ states('sensor.current_interior_humidity_raw') }}
+
+  - sensor:
+    - name: "Current Crawlspace Temperature"
+      unique_id: c5defe8c-969c-4cc5-89d6-0157cf972fa9
+      unit_of_measurement: "°F"
+      state_class: measurement
+      device_class: temperature
+      state: >
+        {{ states('sensor.current_crawl_temperature_raw') }}
+
+  - sensor:
+    - name: "Current Crawlspace Humidity"
+      unique_id: f136e464-35e9-4c9b-b3c3-cc8b76ef386c
+      unit_of_measurement: "%"
+      state_class: measurement
+      device_class: humidity
+      state: >
+        {{ states('sensor.current_crawl_humidity_raw') }}
+
+  - sensor:
+    - name: "Current Attic Temperature"
+      unique_id: c5defe8c-969c-4cc5-89d6-0157cf972fa9
+      unit_of_measurement: "°F"
+      state_class: measurement
+      device_class: temperature
+      state: >
+        {{ states('sensor.current_attic_temperature_raw') }}
+
+  - sensor:
+    - name: "Current Attic Humidity"
+      unique_id: f136e464-35e9-4c9b-b3c3-cc8b76ef386c
+      unit_of_measurement: "%"
+      state_class: measurement
+      device_class: humidity
+      state: >
+        {{ states('sensor.current_attic_humidity_raw') }}

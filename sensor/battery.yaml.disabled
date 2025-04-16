@@ -1,0 +1,22 @@
+        ##########################################################
+        ## Front Door Lock Sensor Battery
+        ##########################################################
+
+  - platform: template
+    sensors:
+      front_door_lock_batt:
+        value_template: '{{ states.zwave.schlage_allegion_be469_touchscreen_deadbolt_2.battery_level }}'
+        friendly_name: 'Front Door Lock'
+        unit_of_measurement: '%'
+        device_class: battery
+        ##########################################################
+        ## Back Door Lock Sensor Battery
+        ##########################################################
+
+  - platform: template
+    sensors:
+      back_door_lock_batt:
+        value_template: '{{ states.zwave.schlage_allegion_be469_touchscreen_deadbolt.battery_level }}'
+        friendly_name: 'Back Door Lock'
+        unit_of_measurement: '%'
+        device_class: battery

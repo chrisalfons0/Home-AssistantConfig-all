@@ -1,0 +1,27 @@
+#################################################################
+## Locaiton Automations
+#################################################################
+
+        ##########################################################
+        ## Household Away Mode Locks
+        ##########################################################
+
+- alias: Location - Household Away Mode Locks
+  id: 61a6030c-b10a-4721-9c57-76420250032b
+
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: 'home'
+      to: 'not_home'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+
+  action:
+    - service: lock.lock
+      entity_id:
+       - lock.frontdoor_lock
+       - lock.backdoor_lock

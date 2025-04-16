@@ -1,0 +1,81 @@
+######################################################################
+##  Dark House Little extra light - DARK and Cloudy or just rainy.
+######################################################################
+
+- alias: 'Dark House Little extra light'
+  id: cb94a5bb-7cb3-4e0d-a753-ace01af0bae4
+  mode: single
+
+  trigger:
+    - platform: state
+      entity_id: sensor.dark_sky_precip
+      to: 'rain'
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_precip_intensity
+      above: 0.2
+    - platform: numeric_state
+      entity_id: sensor.blitzortung_lightning_counter
+      above: 1
+    - platform: state
+      entity_id: group.family
+      to: 'home'
+      from: 'not_home'
+
+  condition:
+    condition: and
+    conditions:
+      - condition: or
+        conditions:
+          - condition: numeric_state
+            entity_id: sensor.dark_sky_cloud_coverage
+            above: 90
+          - condition: numeric_state
+            entity_id: sensor.dark_sky_precip_intensity
+            above: 0.2
+          - condition: numeric_state
+            entity_id: sensor.blitzortung_lightning_counter
+            above: 1
+      - condition: state
+        entity_id: sensor.night_time_sensor
+        state: 'day'
+      - condition: state
+        entity_id: input_boolean.disable_rainy_day
+        state: 'off'
+      - condition: state
+        entity_id: sun.sun
+        state: 'above_horizon'
+      - condition: state
+        entity_id: light.great_room_lights
+        state: 'off'
+      - condition: state
+        entity_id: light.kitchen_can_lights
+        state: 'off'
+
+  action:
+    - service: light.turn_on
+      data:
+        entity_id:
+          - light.great_room_cans
+        brightness: 255
+
+    - service: light.turn_on
+      entity_id: light.kitchen_can_lights
+
+    - service: script.speech_engine
+      data:
+#        value1: "Because of the {{trigger.entity_id.split('_')[2]|replace('precip','rain')|replace('counter','lightning')|replace('chris','rain') }} {{trigger.entity_id.split('_')[3]|replace('intensity',' ')| replace('chris','and clouds')}} outside.  I will turn on some extra lights in the great room."
+        value1: >
+          {% if trigger.entity_id is defined %}
+            {% set entity = trigger.entity_id.split('_') %}
+            {% set weather_event = entity[2] | replace('precip','rain') | replace('counter','lightning') %}
+            {% set weather_detail = entity[3] | replace('intensity',' ') if entity|length > 3 else '' %}
+            Because of the {{ weather_event }} {{ weather_detail }} outside, I will turn on some extra lights in the great room.
+          {% else %}
+            It looks dark and rainy outside, so I'm turning on some extra lights.
+          {% endif %}
+        call_outside_weather: 1
+        call_window_check: 1
+
+    - delay:
+        hours: 3
+######################################################################

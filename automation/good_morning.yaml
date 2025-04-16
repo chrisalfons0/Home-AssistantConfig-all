@@ -1,0 +1,34 @@
+######################################################################
+##  Weekday Morning Routines.
+######################################################################
+
+- alias: 'Good Morning Routine'
+  id: 1432bac8-311b-4618-8f8f-19dd848791b6
+  trigger:
+    - platform: state
+      entity_id: input_boolean.good_morning
+      to: 'on'
+      from: 'off'
+#    - platform: state
+#      entity_id:
+#        - binary_sensor.sleepnumber_carlo_stacey_is_in_bed
+#      to: 'off'
+#      for: '00:05:00'
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: home
+    - condition: time
+      after: '05:30:00'
+      before: '09:00:00'
+
+
+  action:
+    - service: light.turn_on
+      entity_id:
+        - light.kitchen_island_light_new
+    - service: light.turn_on
+      entity_id: light.great_room_accent_lights
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.good_morning

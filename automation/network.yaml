@@ -1,0 +1,97 @@
+#################################################################
+## Network
+#################################################################
+
+    #################################################################
+    ## WAN Down Notification
+    #################################################################
+
+- alias: Network - WAN Down Notification
+  id: e4e91a4f-eac5-486a-b9c8-2537db454662
+
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.wan
+      from: 'on'
+      to: 'off'
+      for:
+        hours: 0
+        minutes: 1
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: persistent_notification.create
+      data:
+        message: "Internet down"
+        title: "WAN"
+        notification_id: "1"
+    - service: script.notify_engine
+      data:
+          value1: "Internet is down"
+          who: 'chris'
+
+    #################################################################
+    ## WAN Up Notification
+    #################################################################
+
+- alias: Network - WAN Up Notification
+  id: ff0e5bcb-be95-4222-a032-61d4397b0423
+
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.wan
+      from: 'off'
+      to: 'on'
+      for:
+        hours: 0
+        minutes: 1
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: persistent_notification.create
+      data:
+        message: "Internet Up"
+        title: "WAN"
+        notification_id: "1"
+    - service: script.notify_engine
+      data:
+          value1: "Internet is back"
+          who: 'chris'
+
+
+        ##########################################################
+        ## Re-Enable Pi-hole After 15 Mins
+        ##########################################################
+
+#- alias: Network - Re-Enable Pi-hole After 15 Mins
+#  id: 591c94c2-f587-463d-8368-116766fb4573
+#
+#  trigger:
+#    - platform: state
+#      entity_id: switch.pihole
+#      from: 'on'
+#      to: 'off'
+#      for:
+#        hours: 0
+#        minutes: 15
+#        seconds: 0
+#
+#  condition:
+#    - condition: state
+#      entity_id: switch.pihole
+#      state: 'off'
+#
+#  action:
+#    - service: homeassistant.turn_on
+#      entity_id:
+#        - switch.pihole

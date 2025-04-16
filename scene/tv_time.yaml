@@ -1,0 +1,10 @@
+- name: TV Time
+  entities:
+       light.great_room_chandelier:
+           state: 'off'
+       light.great_room_cans:
+           state: 'on'
+           brightness: 5
+       group.greatroom_accent_lights:
+           state: 'on'
+           brightness: 25

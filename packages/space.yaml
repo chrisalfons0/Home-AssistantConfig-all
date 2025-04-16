@@ -1,0 +1,30 @@
+#-------------------------------------------
+#------ISS----------------------------------
+#-------------------------------------------
+#binary_sensor:
+#  - platform: iss
+#    show_on_map: true
+#-------------------------------------------
+
+sensor:
+  - platform: rest
+    scan_interval: 1800
+    name: SpaceX Starman
+    json_attributes:
+      - earth_distance_mi
+    value_template: '{{ value_json["speed_mph"] }}'
+    unit_of_measurement: "mph"
+    resource: 'https://api.spacexdata.com/v2/info/roadster'
+
+  - platform: rest
+    scan_interval: 1800
+    name: SpaceX
+    json_attributes:
+      - mission_name
+      - launch_site
+      - rocket
+    value_template: '{{ value_json["launch_date_unix"] }}'
+    resource: 'https://api.spacexdata.com/v2/launches/next'
+
+# This automation was also moved to a macro in the speech_engine.
+# It's a random fact now.

@@ -1,0 +1,58 @@
+######################################################################
+##  Good night Routine
+######################################################################
+
+- alias: 'Good Night Trigger'
+  id: 26846f7b-bc76-43d2-99be-af552da7700f
+  trigger:
+    - platform: state
+      entity_id: input_boolean.good_night
+      to: 'on'
+      from: 'off'
+#    - platform: state
+#      entity_id:
+#        - binary_sensor.sleepnumber_carlo_carlo_is_in_bed
+#        - binary_sensor.sleepnumber_carlo_stacey_is_in_bed
+#      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'
+    - condition: time
+      after: "15:00:00"
+      before: "04:00:00"
+#    - condition: or
+#      conditions:
+#        - condition: state
+#          entity_id: binary_sensor.sleepnumber_carlo_carlo_is_in_bed
+#          state: 'on'
+#        - condition: state
+#          entity_id: person.carlo
+#          state: 'not_home'
+#    - condition: or
+#      conditions:
+#        - condition: state
+#          entity_id: binary_sensor.sleepnumber_carlo_stacey_is_in_bed
+#          state: 'on'
+#        - condition: state
+#          entity_id: person.stacey
+ #         state: 'not_home'
+
+  action:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.good_night
+#    - service: homeassistant.turn_off
+#      entity_id: group.outdoor_xmas_lights
+    - service: script.interior_off
+
+#    - wait_template: "{{ states.media_player.master_bedroom_tv.state == 'standby' }}"
+#      timeout: '00:30:00'
+
+#    - service: homeassistant.turn_off
+#      entity_id: group.landscaping
+    - service: homeassistant.turn_off
+      entity_id: light.string_lights

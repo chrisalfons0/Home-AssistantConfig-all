@@ -1,0 +1,40 @@
+#################################################################
+## iOS Actionable Notifications
+#################################################################
+
+        #################################################################
+        ## Unlock Doors
+        #################################################################
+
+- alias: iOS Action - Unlock Doors
+  id: b6793044-9f24-4898-9ec6-979ada990e4c
+
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "unlock_doors"
+
+  action:
+    - service: lock.unlock
+      entity_id:
+        - lock.backdoor_lock
+        - lock.frontdoor_lock
+
+        #################################################################
+        ## Unlock Front Door
+        #################################################################
+
+- alias: iOS Action - Unlock Front Door
+  id: 15f7c958-6185-4b83-b981-d359922c9d04
+
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "unlock_front_door"
+
+  action:
+    - service: lock.unlock
+      entity_id:
+        - lock.frontdoor_lock

@@ -1,0 +1,967 @@
+#################################################################
+## Thermostat Automations
+#################################################################
+
+        ##########################################################
+        ## Set Thermostat Home
+        ##########################################################
+
+- alias: Climate - Home
+  id: be1828f3-430b-4b22-ad1f-ae81ea58621f
+
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: 'not_home'
+      to: 'home'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+
+  actions:
+    - action: homeassistant.turn_off
+      entity_id: input_boolean.thermostat_away
+    - delay: '00:00:30'
+#    - action: ecobee.set_fan_min_on_time
+#      data:
+#        entity_id: climate.main_floor
+#        fan_min_on_time: '15'
+
+        ##########################################################
+        ## Set Thermostat Away
+        ##########################################################
+
+- alias: Climate - Away
+  id: 888934fc-108d-49d0-b372-4119a1e14636
+
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: 'home'
+      to: 'not_home'
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.family
+        state: 'home'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.friends_and_family
+        state: 'home'
+
+  actions:
+    - action: script.notify_engine
+      data:
+        who: 'chris'
+        value1: "House has been empty for 30 mins, setting HVAC to away"
+    - action: homeassistant.turn_on
+      entity_id: input_boolean.thermostat_away
+        ##########################################################
+        ## Thermostat On Demand Home
+        ##########################################################
+
+- alias: Climate - On Demand Home
+  id: 55ffd1cc-c57a-471a-9547-99e4a402ae46
+
+  trigger:
+    - platform: state
+      entity_id: input_boolean.thermostat_away
+      from: 'on'
+      to: 'off'
+
+  actions:
+    - action: ecobee.resume_program
+      data:
+        entity_id: climate.hallway
+        resume_all: true
+    - action: ecobee.resume_program
+      data:
+        entity_id: climate.dining_room
+        resume_all: true
+
+        ##########################################################
+        ## Thermostat On Demand Away
+        ##########################################################
+
+- alias: Climate - On Demand Away
+  id: 5943e30a-858c-4bd1-986d-bd0b969a2544
+
+  trigger:
+    - platform: state
+      entity_id: input_boolean.thermostat_away
+      from: 'off'
+      to: 'on'
+
+  actions:
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.hallway
+        preset_mode: 'away'
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.dining_room
+        preset_mode: 'away'
+        ##########################################################
+        ## Turn Thermostat On Summer
+        ##########################################################
+
+- alias: Climate - Turn Thermostat On Summer
+  id: 964ffe1d-0997-4d52-b508-c199122f3542
+
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_temperature
+      above: 68
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+#    - condition: numeric_state
+#      entity_id: 'sensor.uptime'
+#      above: 0.01
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'on'
+    - condition: state
+      entity_id: sensor.season
+      state: 'summer'
+
+  actions:
+    - action: homeassistant.turn_off
+      entity_id: input_boolean.thermostat_away
+    - action: script.notify_engine
+      data:
+        who: 'chris'
+        value1: "Outside temp above 68 turning On AC"
+
+        ##########################################################
+        ## Turn Thermostat Off Summer
+        ##########################################################
+
+- alias: Climate - Turn Thermostat Off Summer
+  id: 5a6daaa9-e18c-486f-b2a0-224989bf981e
+
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_temperature
+      below: 68
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'off'
+#    - condition: numeric_state
+#      entity_id: 'sensor.uptime'
+#      above: 0.01
+    - condition: state
+      entity_id: sensor.season
+      state: 'summer'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.friends_and_family
+        state: 'home'
+
+  actions:
+    - action: homeassistant.turn_on
+      entity_id: input_boolean.thermostat_away
+    - action: script.notify_engine
+      data:
+        who: 'chris'
+        value1: "Outside temp below 68 shutting Off AC"
+        ##########################################################
+        ## Turn Thermostat On Winter
+        ##########################################################
+
+- alias: Climate - Turn Thermostat On Winter
+  id: f6e9e5e1-62ed-46e6-ba06-240237dec38a
+
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_temperature
+      below: 68
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+#    - condition: numeric_state
+#      entity_id: 'sensor.uptime'
+#      above: 0.01
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'on'
+    - condition: state
+      entity_id: sensor.season
+      state: 'winter'
+
+  actions:
+    - action: homeassistant.turn_off
+      entity_id: input_boolean.thermostat_away
+    - action: script.notify_engine
+      data:
+        who: 'chris'
+        value1: "Outside temp below 68 turning on Heat"
+
+        ##########################################################
+        ## Turn Thermostat Off Winter
+        ##########################################################
+
+- alias: Climate - Turn Thermostat Off Winter
+  id: fdfc1773-903a-4a41-a4de-c01e8517084a
+
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_temperature
+      above: 68
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+#    - condition: numeric_state
+#      entity_id: 'sensor.uptime'
+#      above: 0.01
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'off'
+    - condition: state
+      entity_id: sensor.season
+      state: 'winter'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.friends_and_family
+        state: 'home'
+
+  actions:
+    - action: homeassistant.turn_on
+      entity_id: input_boolean.thermostat_away
+    - action: script.notify_engine
+      data:
+        who: 'chris'
+        value1: "Outside temp above 68 turning Off Heat"
+
+        ##########################################################
+        ## Turn Thermostat On Spring/Fall
+        ##########################################################
+
+- alias: Climate - Turn Thermostat On Spring/Fall
+  id: 7f97555c-1ab0-42a4-b185-9b820f1519b1
+
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_temperature
+      below: 68
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_temperature
+      above: 75
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+#    - condition: numeric_state
+#      entity_id: 'sensor.uptime'
+#      above: 0.01
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'on'
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: sensor.season
+        state: 'spring'
+      - condition: state
+        entity_id: sensor.season
+        state: 'autumn'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.friends_and_family
+        state: 'home'
+
+  actions:
+    - action: homeassistant.turn_off
+      entity_id: input_boolean.thermostat_away
+    - action: script.notify_engine
+      data:
+        who: 'chris'
+        value1: "Outside temp below 68 or above 75 turning on HVAC"
+
+        ##########################################################
+        ## Turn Thermostat Off Spring/Fall
+        ##########################################################
+
+- alias: Climate - Turn Thermostat Off Spring/Fall
+  id: 3afcff5f-42dd-4d0f-bcac-cff980f9068f
+
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_temperature
+      above: 68
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_temperature
+      below: 75
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+#    - condition: numeric_state
+#      entity_id: 'sensor.uptime'
+#      above: 0.01
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'off'
+
+
+  actions:
+    - action: homeassistant.turn_on
+      entity_id: input_boolean.thermostat_away
+    - action: script.notify_engine
+      data:
+        who: 'chris'
+        value1: "Outside temp above 68 or below 75 turning Off HVAC"
+
+        ##########################################################
+        ## Spring Mode HVAC Auto
+        ##########################################################
+
+- alias: Climate - Spring Mode HVAC Auto
+  id: 90c85c12-49aa-466f-80c6-13b555d6e2ba
+
+  trigger:
+    - platform: state
+      entity_id: sensor.season
+      to: 'spring'
+
+  actions:
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.hallway
+        hvac_mode: heat_cool
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.dining_room
+        hvac_mode: heat_cool
+
+        ##########################################################
+        ## Winter Mode On Turn On Heat
+        ##########################################################
+
+- alias: Climate - Winter Mode On Turn On Heat
+  id: 56370a21-2a36-46ac-b114-4fe63d7504a0
+
+  trigger:
+    - platform: state
+      entity_id: sensor.season
+      to: 'winter'
+
+  actions:
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.hallway
+        hvac_mode: heat
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.dining_room
+        hvac_mode: heat
+        ##########################################################
+        ## Summer Mode On Turn On Cool
+        ##########################################################
+
+- alias: Climate - Summer Mode On Turn On Cool
+  id: 119b43c6-471a-4f4a-9db1-912d6c110340
+
+  trigger:
+    - platform: state
+      entity_id: sensor.season
+      to: 'summer'
+
+  actions:
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.hallway
+        hvac_mode: cool
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.dining_room
+        hvac_mode: cool
+
+        ##########################################################
+        ## Fall Season HVAC Auto
+        ##########################################################
+
+- alias: Climate - Fall Season HVAC Auto
+  id: cf2711c8-c19f-4304-8af1-c680ed13f6fc
+
+  trigger:
+    - platform: state
+      entity_id: sensor.season
+      to: 'autumn'
+
+  actions:
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.hallway
+        hvac_mode: heat_cool
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.dining_room
+        hvac_mode: heat_cool
+
+
+        ##########################################################
+        ## Adjust Thermostat for Overnight Guests before Midnight
+        ##########################################################
+
+- alias: Climate - Turn On Guest Settings before Midnight
+  id: 8edeb59e-7570-421d-9d23-6528c99e0a03
+
+  trigger:
+    - platform: time
+      at: '23:59:00'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'on'
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+
+  actions:
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.dining_room
+        preset_mode: 'guest'
+
+        ##########################################################
+        ## Adjust Thermostat for Overnight Guests after Midnight
+        ##########################################################
+
+- alias: Climate - Turn On Guest Settings after Midnight
+  id: 6afd3478-b101-4bf4-b794-d44118e77f9b
+
+  trigger:
+    - platform: state
+      entity_id: input_boolean.guest_mode
+      to: 'on'
+
+  condition:
+    - condition: time
+      after: '00:00:00'
+      before: '04:59:00'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: state
+      entity_id: group.overnight_guests
+      state: 'home'
+
+  actions:
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.dining_room
+        preset_mode: 'Guest'
+
+        ##########################################################
+        ## Reset Thermostat when Lupe Leaves
+        ##########################################################
+
+- alias: Climate - Reset Thermostat when Lupe Leaves
+  id: 855f8942-e441-4d5e-b9a1-7aac7df0dc19
+
+  trigger:
+    - platform: state
+      entity_id: person.lupe
+      from: 'home'
+      to: 'not_home'
+
+  condition:
+    - condition: time
+      after: '06:00:00'
+      before: '07:30:00'
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: time
+      weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+
+  actions:
+    - action: ecobee.resume_program
+      data:
+        entity_id: climate.dining_room
+        resume_all: true
+
+    - action: ecobee.resume_program
+      data:
+        entity_id: climate.hallway
+        resume_all: true
+        ##########################################################
+        ## Reset Thermostat Mode After Selection
+        ##########################################################
+
+- alias: Climate - Reset Thermostat Mode After Selection
+  id: 6f3a54af-f027-4b77-868e-3d66a5c85d85
+
+  trigger:
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Clear Holds'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Home'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Away'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Sleep'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Guest'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Fireplace'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+
+  actions:
+    - action: input_select.select_option
+      data:
+        entity_id: input_select.thermostat_mode
+        option: 'None'
+
+
+        ##########################################################
+        ## Lower Temperature when Guests Visiting
+        ##########################################################
+
+- alias: Climate - Lower Temperature when Guests Visiting
+  id: e911702c-592a-46a1-ac15-b6748b24427b
+
+  trigger:
+    - platform: state
+      entity_id: group.friends_and_family
+      from: 'not_home'
+      to: 'home'
+      for:
+        hours: 0
+        minutes: 30
+        seconds: 0
+
+  condition:
+    - condition: time
+      after: '09:00:00'
+      before: '23:30:00'
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: sensor.season
+      state: 'summer'
+    - condition: state
+      entity_id: sensor.thermostat_climate_mode
+      state: 'Home'
+
+  actions:
+    - action: climate.set_temperature
+      data:
+        entity_id: climate.dining_room
+        temperature: 70
+    - action: climate.set_temperature
+      data:
+        entity_id: climate.hallway
+        temperature: 70
+        ##########################################################
+        ## Reset Temperature when Guests Leaves
+        ##########################################################
+
+- alias: Climate - Reset Temperature when Guests Leaves
+  id: 172aa825-f365-420e-9a8e-b6ca596a29c3
+
+  trigger:
+    - platform: state
+      entity_id: group.friends_and_family
+      from: 'home'
+      to: 'not_home'
+      for:
+        hours: 0
+        minutes: 15
+        seconds: 0
+
+  condition:
+    - condition: time
+      after: '09:00:00'
+      before: '23:30:00'
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: sensor.thermostat_climate_mode
+      state: 'Temperature Hold'
+    - condition: state
+      entity_id: sensor.season
+      state: 'summer'
+
+  actions:
+    - action: ecobee.resume_program
+      data:
+        entity_id: climate.hallway
+        resume_all: true
+    - action: ecobee.resume_program
+      data:
+        entity_id: climate.dining_room
+        resume_all: true
+
+- alias: Climate - Turn on once windows closed
+  id: 9e20244f-d86d-498d-82c2-450039bd48d8
+
+  trigger:
+    - platform: state
+      entity_id: group.entry_points
+      from: 'on'
+      to: 'off'
+      for:
+        hours: 0
+        minutes: 5
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.thermostat_away
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_climate
+      state: 'off'
+    - condition: state
+      entity_id: climate.dining_room
+      state: 'off'
+    - condition: state
+      entity_id: climate.hallway
+      state: 'off'
+
+  actions:
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.hallway
+        hvac_mode: heat_cool
+    - action: climate.set_hvac_mode
+      data:
+        entity_id: climate.dining_room
+        hvac_mode: heat_cool
+
+
+- alias: 'Turn off HVAC in window/door is opened'
+  id: 417961da-b706-4d5f-b155-e3518d24f0bc
+  trigger:
+    - platform: state
+      entity_id:
+        - group.entry_points
+      to: 'on'
+      from: 'off'
+      for:
+        minutes:
+
+  actions:
+    - action: climate.turn_off
+      target:
+        entity_id:
+          - climate.dining_room
+          - climate.hallway
+    - service: script.speech_engine
+      data:
+        value1: >-
+          {% set opening = state_attr(trigger.entity_id, "friendly_name")%}
+          {%- macro opening_sentence(opening) -%}
+          {{ [
+          "The " ~ opening +" has been opened for about 5 minutes.  I will shut down the Air Conditioner so you can enjoy the fresh air.",
+          "Since the " ~ opening +" is still open, I will turn off the air conditioners until you close it",
+          "The " ~ opening +" has been left open, I will turn off the AC to save some money for you.",
+          "We cant have the Air Conditioning running AND have " ~ opening +" open so I will turn off the AC.",
+          "Since running the AC while " ~ opening +" is open, I will turn off the Air Conditioner.",
+          "Once the " ~ opening +" is closed, I will turn the Air Conditioner back on",
+          "So we dont waste money, I will turn off the AC until " ~ opening +" has been closed.",
+          "The " ~ opening +" is open and we are cooling the outside. I will fix that by turning off the AC for now.",
+          "The fresh Air from the " ~ opening +" is great so I will turn off the AC until it is closed again.",
+          "When Doors and windows are left open like the  " ~ opening +", I will remember to turn off the AC."
+          ] | random }}
+          {%- endmacro -%}
+          {{opening_sentence(opening)}}
+        call_outside_weather: 1
+        call_inside_weather: 1
+
+- alias: 'Turn HVAC back on when all doors/windows are closed'
+  id: 66833291-c504-4651-aac9-3cdbf98d20ea
+  trigger:
+    - platform: state
+      entity_id:
+        - group.entry_points
+      to: 'off'
+      from: 'on'
+      for:
+        minutes: 5
+
+  conditions:
+  - condition: or
+    conditions:
+      - condition: template
+        value_template: "\"{{ states('climate.dining_room') == 'off' }}\""
+      - condition: template
+        value_template: "\"{{ states('climate.hallway') == 'off' }}\""
+
+  actions:
+  - action: climate.set_hvac_mode
+    data:
+      hvac_mode: heat_cool
+    target:
+      entity_id:
+        - climate.dining_room
+        - climate.hallway
+
+
+
+#################################################################
+## Input Booleans, Input Selects, and UI
+#################################################################
+
+        ##########################################################
+        ## Clear Thermostat Hold Modes Manually
+        ##########################################################
+
+- alias: Climate - Clear Thermostat Hold Mode Manually
+  id: 90c090ee-cd12-4cda-abea-d241170f237b
+
+  trigger:
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: "Clear Holds"
+
+  actions:
+    - action: ecobee.resume_program
+      data:
+        entity_id: climate.hallway
+        resume_all: true
+    - action: ecobee.resume_program
+      data:
+        entity_id: climate.dining_room
+        resume_all: true
+    - action: homeassistant.turn_off
+      entity_id: input_boolean.thermostat_away
+
+        ##########################################################
+        ## Set Home Mode Manually
+        ##########################################################
+
+- alias: Climate - Set Home Mode Manually
+  id: 5bb12bf5-a96e-4e58-9306-82508c4e9939
+
+  trigger:
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Home'
+
+  actions:
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.dining_room
+        preset_mode: 'home'
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.hallway
+        preset_mode: 'home'
+    - action: homeassistant.turn_off
+      entity_id: input_boolean.thermostat_away
+
+        ##########################################################
+        ## Set Away Mode Manually
+        ##########################################################
+
+- alias: Climate - Set Away Mode Manually
+  id: 'climate_set_away_mode_manually'
+
+  trigger:
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Away'
+
+  actions:
+    - action: homeassistant.turn_on
+      entity_id: input_boolean.thermostat_away
+
+        ##########################################################
+        ## Set Sleep Mode Manually
+        ##########################################################
+
+- alias: Climate - Set Sleep Mode Manually
+  id: cfa2a4fe-e82d-47cb-b560-281342ce5063
+
+  trigger:
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Sleep'
+
+  actions:
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.dining_room
+        preset_mode: 'sleep'
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.hallway
+        preset_mode: 'sleep'
+    - action: homeassistant.turn_off
+      entity_id: input_boolean.thermostat_away
+
+        ##########################################################
+        ## Set Guest Mode Manually
+        ##########################################################
+
+- alias: Climate - Set Guest Mode Manually
+  id: 21163d36-2aee-428a-b756-5f56c2f9e2c2
+
+  trigger:
+    - platform: state
+      entity_id: input_select.thermostat_mode
+      to: 'Guest'
+
+  actions:
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.dining_room
+        preset_mode: 'guest'
+    - action: climate.set_preset_mode
+      data:
+        entity_id: climate.hallway
+        preset_mode: 'guest'
+    - action: homeassistant.turn_off
+      entity_id: input_boolean.thermostat_away

@@ -1,0 +1,29 @@
+######################################################################
+##  Shut it all down.  No one is here
+######################################################################
+
+- alias: 'Away Mode'
+  id: 712e845a-9d72-4993-b8af-890b167c807b
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: sensor.away_mode
+      to: 'true'
+    - platform: state
+      entity_id: group.family
+      to: 'not_home'
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'not_home'
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+
+  action:
+    - service: script.interior_off
+    

@@ -1,0 +1,176 @@
+#################################################################
+## Vacation Mode Automations
+#################################################################
+
+        ##########################################################
+        ## Vacation Mode On
+        ##########################################################
+
+- alias: Vacation - Mode On
+  id: 91c42b54-63ae-46b3-8c9d-e124caf2a939
+
+  trigger:
+    - platform: state
+      entity_id: input_boolean.vacation_mode
+      to: 'on'
+
+  condition:
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.family
+        state: 'home'
+    - condition: not
+      conditions:
+      - condition: state
+        entity_id: group.friends_and_family
+        state: 'home'
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id:
+       - input_boolean.disable_rainy_day
+       - input_boolean.disable_interior_lights_sunset
+       - input_boolean.disable_media_lights
+       - input_boolean.disable_occupancy
+       - input_boolean.disable_motion
+       
+       
+
+        ##########################################################
+        ## Vacation Mode Off
+        ##########################################################
+
+- alias: Vacation - Mode Off
+  id: 934ba436-a11d-41b6-abf7-1e9f45705b00
+
+  trigger:
+    - platform: state
+      entity_id: input_boolean.vacation_mode
+      to: 'off'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.vacation_mode
+      state: 'on'
+
+  action:
+    - service: homeassistant.turn_off
+      entity_id:
+       - input_boolean.disable_rainy_day
+       - input_boolean.disable_interior_lights_sunset
+       - input_boolean.disable_media_lights
+       - input_boolean.disable_occupancy
+       - input_boolean.thermostat_away
+       - input_boolean.disable_motion
+
+        ##########################################################
+        ## Turn On Vacation Mode when Gone 24 Hours
+        ##########################################################
+
+- alias: Vacation - Turn On when Gone 24 Hours
+  id: de155a92-c96c-44cd-a893-a5d283e43420
+
+  trigger:
+    - platform: state
+      entity_id: group.family
+      to: 'not_home'
+      for:
+        hours: 24
+        minutes: 0
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id: input_boolean.vacation_mode
+
+        ##########################################################
+        ## Turn off Vacation Mode when Home
+        ##########################################################
+
+- alias: Vacation - Turn off when Home
+  id: bfc5d108-34b4-46f7-869e-16e6db6645fd
+
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: 'not_home'
+      to: 'home'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+
+  action:
+    - service: homeassistant.turn_off
+      entity_id: input_boolean.vacation_mode
+
+
+
+        ##########################################################
+        ## Vacation Lights On at Night
+        ##########################################################
+
+- alias: Vacation - Lights On at Night
+  id: b00cccaa-134e-4a2d-aa62-bf58d431ea4c
+
+  trigger:
+    - platform: state
+      entity_id: sun.sun
+      from: 'above_horizon'
+      to: 'below_horizon'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.vacation_mode
+      state: 'on'
+
+  action:
+    - service: light.turn_on
+      entity_id:
+        - light.kitchen_island_light_new
+      data:
+        brightness_pct: 50
+    - service: light.turn_on
+      entity_id:
+        - light.endtable_greatroom_2
+      data:
+        brightness_pct: 50
+        transition: 120
+    - service: light.turn_on
+      entity_id:
+        - light.office_ceiling_light    
+        
+
+        ##########################################################
+        ## Vacation Mode Lights off at Midnight
+        ##########################################################
+
+- alias: Vacation - Lights Off at Midnight
+  id: 7143dca7-2b8d-4f85-b62c-621057f11825
+
+  trigger:
+    - platform: time
+      at: '23:16:32'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.vacation_mode
+      state: 'on'
+
+  action:
+    - service: light.turn_off
+      entity_id:
+        - light.kitchen_island_light_new
+    - delay: '00:37:04'
+    - service: light.turn_off
+      entity_id:
+        - light.endtable_greatroom_2
+        - light.office_ceiling_light
+        

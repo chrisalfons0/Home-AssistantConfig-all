@@ -1,0 +1,98 @@
+#-------------------------------------------
+#  PiHole ad Blocking Related Packages
+#-------------------------------------------
+homeassistant:
+  customize:
+
+    sensor.pihole_ads_percentage_today:
+      friendly_name: Percentage of Ad Traffic Blocked
+      unit_of_measurement: '%'
+      icon: mdi:ticket-percent
+
+    switch.pihole_temp_disable:
+      friendly_name: Disable Pi Hole
+      icon: mdi:stop
+
+    sensor.pihole_domains_being_blocked:
+      friendly_name: Total Domains Blocking
+      icon: mdi:do-not-disturb
+
+    sensor.pihole_dns_unique_clients:
+      friendly_name: Unique Clients
+      icon: mdi:desktop-classic
+
+    sensor.pihole_ads_blocked_today:
+      friendly_name: Ads Blocked Today
+      icon: mdi:do-not-disturb
+
+    sensor.pihole_dns_queries_today:
+      friendly_name: DNS Queries Today
+      icon: mdi:note-text
+
+    sensor.chrispihole:
+      friendly_name: Pi Hole Server
+      icon: mdi:filter-variant
+
+    group.pihole:
+      homebridge_hidden: true
+
+
+# Pi-Hole switch
+switch:
+  - platform: command_line
+    switches:
+      pihole_temp_disable:
+        command_on: "curl -X GET 'http://192.168.160.27:80/api/dns/blocking'"
+        command_off: "curl -X GET 'http://192.168.160.27/admin/api.php?disable=3600&auth='"
+
+#-------------------------------------------
+
+group:
+  pihole:
+    entities:
+      - binary_sensor.192_168_160_27
+      - sensor.pi_hole_dns_unique_clients
+      - sensor.pi_hole_dns_queries_today
+      - sensor.pi_hole_ads_blocked_today
+      - sensor.pi_hole_ads_percentage_blocked_today
+#-------------------------------------------
+
+
+rest:
+  - resource_template: "http://192.168.160.27:80/api/stats/summary" # I have configured input text on home assistant UI in my case, you can also hardcode url
+    verify_ssl: false
+    method: GET
+    headers:
+      sid: "VhJoJNzMwJsgy5JX69YxHQ=" # you can hard code value since the more you use, its expiration time will increase automatically
+    timeout: 10
+    scan_interval: 10
+    sensor:
+      - name: "Total Queries"
+        value_template: "{{ value_json.queries.total }}"
+        unit_of_measurement: "queries"
+        unique_id: "pi_hole_total_queries"
+  
+      - name: "Blocked Queries"
+        value_template: "{{ value_json.queries.blocked }}"
+        unit_of_measurement: "queries"
+        unique_id: "pi_hole_blocked_queries"
+  
+      - name: "Blocked %"
+        value_template: "{{ value_json.queries.percent_blocked | round(2) }}"
+        unit_of_measurement: "%"
+        unique_id: "pi_hole_percent_blocked"
+  
+      - name: "Queries Forwarded"
+        value_template: "{{ value_json.queries.forwarded }}"
+        unit_of_measurement: "queries"
+        unique_id: "pi_hole_forward_queries"
+  
+      - name: "Queries from Cache"
+        value_template: "{{ value_json.queries.cached }}"
+        unit_of_measurement: "queries"
+        unique_id: "pi_hole_cached_queries"
+        
+      - name: "Pi Hole DNS Unique Clients"
+        value_template: "{{ value_json.clients.active }}"
+        unit_of_measurement: "queries"
+        unique_id: "Pi Hole DNS Unique Clients"        

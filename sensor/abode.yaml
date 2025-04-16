@@ -1,0 +1,13 @@
+###################################################
+#abode
+###################################################
+
+- platform: template
+  sensors:
+     home_mode:
+       value_template: "{{ is_state('alarm_control_panel.abode_alarm', 'armed_home') }}"
+       
+- platform: template
+  sensors:
+     away_mode:
+       value_template: "{{ is_state('alarm_control_panel.abode_alarm', 'armed_away') }}"

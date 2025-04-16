@@ -1,0 +1,39 @@
+guest_mode:
+  name: Guest Mode
+  icon: mdi:account-alert
+  initial: off
+
+work_mode:
+  name: Work Mode
+  icon: mdi:briefcase
+  initial: off
+
+work_from_home_mode:
+  name: Work From Home
+  icon: mdi:vpn
+  initial: off
+
+alert_mode:
+  name: Alert Mode
+  icon: mdi:alert-octagram
+  initial: off
+
+speech_notifications:
+  name: Speech Notifications
+  icon: mdi:speaker-wireless
+  initial: on
+
+text_notifications:
+  name: Text Notifications
+  icon: mdi:cellphone-wireless
+  initial: on
+
+last_message:
+  name: Last Message
+  icon: mdi:cellphone
+  initial: on
+
+chris_office_do_not_disturb:
+  name: Chris's Office do not disturb
+  icon: mdi:cellphone
+  initial: off

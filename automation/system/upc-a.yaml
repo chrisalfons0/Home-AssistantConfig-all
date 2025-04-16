@@ -1,0 +1,110 @@
+        ##########################################################
+        ## UPS Power Restored Alert iOS Notification
+        ##########################################################
+
+- alias: System - UPS Power Restored Alert iOS Notification
+  id: b4e33564-c742-4012-88aa-52a97c3be6c8
+
+  trigger:
+    - platform: numeric_state
+      entity_id:
+          - sensor.ups_a_input_voltage
+      above: 110
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_startup_notifications
+      state: 'off'
+
+  action:
+    - service: script.notify_engine
+      data:
+        title: 'Power restored'
+        value1: "Power is back in the house"
+        ios_category: "UPS"
+        who: 'family'
+        apns_id: 'Alert'
+
+        ##########################################################
+        ## UPS Power Loss Alert iOS Notification
+        ##########################################################
+
+- alias: System - UPS Power Loss Alert iOS Notification
+  id: de9ebd39-6236-41db-b0f3-2eb7ec6b351c
+
+  trigger:
+    - platform: numeric_state
+      entity_id:
+          - sensor.ups_a_input_voltage
+      below: 70
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: script.notify_engine
+      data:
+        title: 'Power Outage'
+        value1: "Power is out at the house"
+        ios_category: "UPS"
+        who: 'family'
+        apns_id: 'Alert'
+
+        ##########################################################
+        ## UPS Low Battery Alert iOS Notification
+        ##########################################################
+
+- alias: System - UPS Low Battery Alert iOS Notification
+  id: d5e7eb6f-5edf-4409-b389-2211fe08e791
+
+  trigger:
+    - platform: numeric_state
+      entity_id:
+          - sensor.ups_a_battery_charge
+      below: 15
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: script.notify_engine
+      data:
+        title: 'Low battery'
+        value1: "{{ trigger.to_state.attributes.friendly_name }} Low"
+        ios_category: "UPS"
+        who: 'chris'
+        apns_id: 'Alert'
+
+        ##########################################################
+        ## UPS Disconnected iOS Notification
+        ##########################################################
+
+- alias: System - UPS Disconnected iOS Notification
+  id: 840cf333-5127-4e42-bebc-ed62752c2e7b
+
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.ups_a_status
+      to: 'unavailable'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: script.notify_engine
+      data:
+        title: 'Low battery'
+        value1: "{{ trigger.to_state.attributes.friendly_name }} has Disconnected"
+        ios_category: "UPS"
+        who: 'chris'
+        apns_id: 'Alert'

@@ -1,0 +1,607 @@
+#################################################################
+## Holiday Automations
+#################################################################
+
+
+        ##########################################################
+        ## Turn Off Exterior Christmas Lights at sunrise
+        ##########################################################
+
+- alias: Holiday - Turn Off Exterior Holiday Lights at Sunrise
+  id: 30145fdf-7538-404e-b294-eff65ea15e72
+  trigger:
+    - platform: sun
+      event: 'sunrise'
+      offset: '+00:15:00'
+
+  condition:
+    - condition: state
+      entity_id: light.outdoor_holiday_lights
+      state: 'on'
+
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - light.outdoor_holiday_lights
+
+
+
+        ##########################################################
+        ## Holiday Tree Home Mode
+        ##########################################################
+
+- alias: Holiday - Tree Home Mode
+  id: 4d82a5cd-ad0a-4d2f-8953-07f6e7346c20
+
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: 'not_home'
+      to: 'home'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: switch.christmas_tree
+      state: 'off'
+
+  action:
+    - service: light.turn_on
+      entity_id:
+        - light.indoor_holiday_lights
+
+        ##########################################################
+        ## Turn on Holiday Tree at Sunset
+        ##########################################################
+
+- alias: Holiday - Turn on Holiday Tree at Sunset
+  id: ec71dcf3-2a07-4d8c-ad09-b5585a6b279f
+
+  trigger:
+    - platform: sun
+      event: 'sunset'
+      offset: '-00:30:00'
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.disable_interior_lights_sunset
+      state: 'off'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+
+
+
+
+        ##########################################################
+        ## Late Night TV Watching before Midnight Christmas Tree on
+        ##########################################################
+
+- alias: Christmas - Late Night TV Watching before Midnight Tree on
+  id: a65934ea-6950-4927-b8cc-59baea5dedc1
+
+  trigger:
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'paused'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'idle'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.disable_media_lights
+      state: 'off'
+    - condition: time
+      after: '21:30'
+    - condition: state
+      entity_id: input_boolean.watching_plex
+      state: 'off'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+        ##########################################################
+        ## Late Night TV Watching after Midnight Christmas Tree on
+        ##########################################################
+
+- alias: Christmas - Late Night TV Watching after Midnight Tree on
+  id: 3b90b652-b553-4a87-955e-eafae7f72f60
+
+  trigger:
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'paused'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'idle'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.disable_media_lights
+      state: 'off'
+    - condition: time
+      after: '00:00'
+      before: '03:00'
+    - condition: state
+      entity_id: input_boolean.watching_plex
+      state: 'off'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+        ##########################################################
+        ## Late Night TV Watching after Midnight Christmas Tree On
+        ##########################################################
+
+- alias: Christmas - Late Night TV Watching after Midnight Tree On
+  id: fd69ffdc-242d-45f8-af60-54b0efa7e6e1
+
+  trigger:
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'paused'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'idle'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.disable_media_lights
+      state: 'off'
+    - condition: time
+      after: '00:00'
+      before: '03:00'
+    - condition: state
+      entity_id: input_boolean.watching_plex
+      state: 'off'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+        ##########################################################
+        ## Late Night TV Watching after Midnight Christmas Tree off
+        ##########################################################
+
+- alias: Christmas - Late Night TV Watching after Midnight Tree off
+  id: 94997441-d041-4d72-b771-c6894z880890
+
+  trigger:
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'playing'
+      for:
+        hours: 0
+        minutes: 2
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.disable_media_lights
+      state: 'off'
+    - condition: time
+      after: '00:00'
+      before: '03:00'
+    - condition: state
+      entity_id: input_boolean.watching_plex
+      state: 'off'
+
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - switch.christmas_tree
+
+
+
+#################################################################
+## Halloween Automations
+#################################################################
+
+        ##########################################################
+        ## Turn on Exterior Holiday Lights at Sunset
+        ##########################################################
+
+- alias: Halloween - Turn on Exterior Halloween Lights at Sunset
+  id: f03f6e7a-df7b-4014-bea2-93c983d3d74f
+
+  trigger:
+    - platform: sun
+      event: 'sunset'
+      offset: '-00:15:00'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_exterior_on_sunset
+      state: 'off'
+    - condition: state
+      entity_id: input_select.holiday
+      state: 'Halloween'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - light.outdoor_holiday_lights
+
+        ##########################################################
+        ## Turn Off Exterior Halloween Lights at sunrise
+        ##########################################################
+
+- alias: Christmas - Turn Off Exterior Halloween Lights at Sunrise
+  id: af22c5ae-3ad3-4b97-aa8d-7f2d3a4d70d2
+  trigger:
+    - platform: sun
+      event: 'sunrise'
+      offset: '+00:15:00'
+
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - light.outdoor_holiday_lights
+
+
+
+        ##########################################################
+        ## Hallween Interior Home Mode
+        ##########################################################
+
+- alias: Halloween - Interior Home Mode
+  id: 308aff4a-348e-4cdb-85ae-c3d9f2d512c8
+
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: 'not_home'
+      to: 'home'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+
+  condition:
+    - condition: state
+      entity_id: input_select.holiday
+      state: 'Halloween'
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: switch.christmas_tree
+      state: 'off'
+    - condition: or
+      conditions:
+      - condition: state
+        entity_id: input_boolean.chris_away
+        state: 'on'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+        ##########################################################
+        ## Turn on Halloween Interior at Sunset
+        ##########################################################
+
+- alias: Hallowen - Turn on Halloween Interior at Sunset
+  id: 1b390c93-ffd1-450d-b761-716c43f7c5ed
+
+  trigger:
+    - platform: sun
+      event: 'sunset'
+      offset: '-00:30:00'
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.disable_interior_lights_sunset
+      state: 'off'
+    - condition: state
+      entity_id: input_select.holiday
+      state: 'Halloween'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+
+
+        ##########################################################
+        ## Turn on Christmas Tree when Lupe Home
+        ##########################################################
+
+- alias: Christmas - Turn on Christmas Tree when Lupe Home
+  id: 28ccb0ff-5de7-446a-9e12-e579f49d6774
+
+  trigger:
+    - platform: state
+      entity_id: person.lupe
+      from: 'not_home'
+      to: 'home'
+      for:
+        hours: 0
+        minutes: 0
+        seconds: 30
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+    - condition: time
+      after: '08:30'
+      before: '16:00'
+    - condition: state
+      entity_id: switch.christmas_tree
+      state: 'off'
+    - condition: state
+      entity_id: input_select.holiday
+      state: 'Halloween'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+
+        ##########################################################
+        ## Late Night TV Watching before Midnight Christmas Tree on
+        ##########################################################
+
+- alias: Christmas - Late Night TV Watching before Midnight Tree on
+  id: c51ff5b5-c7cb-47b3-8206-3129b87634ec
+
+  trigger:
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'paused'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'idle'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.disable_media_lights
+      state: 'off'
+    - condition: time
+      after: '21:30'
+    - condition: state
+      entity_id: input_select.holiday
+      state: 'Halloween'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+        ##########################################################
+        ## Late Night TV Watching after Midnight Christmas Tree on
+        ##########################################################
+
+- alias: Christmas - Late Night TV Watching after Midnight Tree on
+  id: 6a4889c4-9f89-48ac-bd84-31f634b640c1
+
+  trigger:
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'paused'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'idle'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.disable_media_lights
+      state: 'off'
+    - condition: time
+      after: '00:00'
+      before: '03:00'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+        ##########################################################
+        ## Late Night TV Watching after Midnight Christmas Tree On
+        ##########################################################
+
+- alias: Christmas - Late Night TV Watching after Midnight Tree On
+  id: fd69ffdc-242d-45f8-af60-54b0efa786e1
+
+  trigger:
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'paused'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'idle'
+      for:
+        hours: 0
+        minutes: 3
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.disable_media_lights
+      state: 'off'
+    - condition: time
+      after: '00:00'
+      before: '03:00'
+
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.christmas_tree
+
+        ##########################################################
+        ## Late Night TV Watching after Midnight Christmas Tree off
+        ##########################################################
+
+- alias: Christmas - Late Night TV Watching after Midnight Tree off
+  id: 94997441-d041-4d72-b771-c6894a880890
+
+  trigger:
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'playing'
+      for:
+        hours: 0
+        minutes: 2
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.disable_media_lights
+      state: 'off'
+    - condition: time
+      after: '00:00'
+      before: '03:00'
+
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - switch.christmas_tree
+
+
+        ##########################################################
+        ## Halloween Interior Bedtime
+        ##########################################################
+
+- alias: Halloween - Interior Bedtime
+  id:  bc6e5841-01f9-40a2-88cb-d3e4d8d55a60
+
+  trigger:
+    - platform: state
+      entity_id: input_boolean.good_night
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: switch.christmas_tree
+      state: 'on'
+
+
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - switch.christmas_tree
+
+
+- alias: 'Outdoor Holiday Decorations Sunset'
+  id: ab51e5cb-e500-4562-9ca5-47c4b3cae00e
+  trigger:
+    - platform: sun
+      event: sunset
+      offset: -00:15:00
+#    - platform: state
+#      entity_id:
+#        - binary_sensor.sleepnumber_carlo_stacey_is_in_bed
+#      to: 'off'
+#      for: '00:05:00'
+
+  condition:
+    - condition: state
+      entity_id: light.outdoor_holiday_lights
+      attribute: entity_id
+      state: 'off'
+    - condition: template
+      value_template: "{{ now().month in [9, 10, 11, 12] }}"
+
+
+  action:
+    - service: light.turn_on
+      entity_id:
+        - light.outdoor_holiday_lights

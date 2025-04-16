@@ -1,0 +1,21 @@
+######################################################################
+##  Stuff that needs to happen at 06:30am.
+######################################################################
+
+- alias: 'Timed 0630'
+  id: 7bf33e23-021c-4e11-946b-b052b81fd2bc
+  mode: single
+  trigger:
+    - platform: time
+      at: '06:30:00'
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: home
+
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id:
+        - switch.counter_lights

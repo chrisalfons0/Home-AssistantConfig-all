@@ -1,0 +1,70 @@
+#-------------------------------------------
+sensor:
+
+
+
+#  - platform: template
+#    sensors:
+#      server_uptime:
+#        friendly_name: "Uptime"
+#        icon_template: mdi:clock
+#        value_template: >
+#          {% set up_time = as_timestamp(now()) - as_timestamp(states('sensor.last_boot')) %}
+
+#          {% set minutes = (up_time // 60) | int %}
+#          {% set hours = (minutes // 60) %}
+#          {% set days = (hours // 24) %}
+#          {% set weeks = (days // 7) %}
+
+#          {% set minutes = (minutes % 60) %}
+#          {% set hours =  (hours % 24) %}
+#          {% set days = (days % 7) %}
+
+#          {% macro phrase(value, name) %}
+#                    {%- set value = value %}
+#                    {%- set end = 's' if value > 1 else '' %}
+#                    {{- '{} {}{}'.format(value, name, end) if value | int > 0 else '' }}
+#          {%- endmacro %}
+
+#          {% set text = [ phrase(weeks, 'week'), phrase(days, 'day'), phrase(hours, 'hr'), phrase(minutes, 'min') ] | select('!=','') | list | join(', ') %}
+#          {% set last_comma = text.rfind(',') %}
+#          {% if last_comma != -1 %}
+#            {% set text = text[:last_comma] + ' and' + text[last_comma + 1:] %}
+#          {% endif %}
+
+
+
+#-------------------------------------------
+##############################################################################
+###  Automations - Detect when things are not right. Like any Good Watchdog.
+##############################################################################
+
+automation:
+
+  - alias: "Self Heal Disk Use Alarm"
+    id: b16f2155-4688-4c0f-9cf8-b382e294a029
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.disk_use_percent
+        above: 80
+    action:
+      - service: script.notify_engine
+        data:
+          value1: 'Hard Drive Monitor:'
+          value2: "Your harddrive is running out of Space! /dev/root:{{ states.sensor.disk_use_percent.state }}%!"
+          value3: 'Attempting to clean'
+          who: 'chris'
+      - service: tts.clear_cache
+
+  - alias: "Disk Use Alarm"
+    id: 1ce3cb43-0e27-4c53-acdd-d672396f3559
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.disk_use_percent
+        above: 90
+    action:
+      - service: script.notify_engine
+        data:
+          value1: 'Hard Drive Monitor:'
+          value2: "Your harddrive is running out of Space! /dev/root:{{ states.sensor.disk_use_percent.state }}%!"
+          who: 'chris'

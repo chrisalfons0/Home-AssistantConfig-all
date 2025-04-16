@@ -1,0 +1,48 @@
+- alias: TV Time
+  id: 6e59d312-661f-40da-bb08-416f2e86b566
+  trigger:
+    - platform: state
+      entity_id: input_boolean.tv_time
+      to: 'on'
+      from: 'off'
+    - platform: state
+      entity_id: sun.sun
+      to: 'below_horizon'
+      from: 'above_horizon'
+    - platform: state
+      entity_id: media_player.great_room_tv
+      to: 'playing'
+    - platform: time
+      at: '20:00:00'
+
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: group.family
+        state: home
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+      - condition: state
+        entity_id: input_boolean.guest_mode
+        state: 'off'
+      - condition: time
+        after: '20:00:00'
+      - condition: state
+        entity_id: media_player.great_room_tv
+        state: 'playing'
+
+  action:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.tv_time
+
+    - service: light.turn_off
+      entity_id:
+        - light.kitchen_island_light_new
+
+    - service: switch.turn_off
+      entity_id: switch.kitchen_can_lights
+
+    - service: scene.turn_on
+      entity_id: scene.tv_time

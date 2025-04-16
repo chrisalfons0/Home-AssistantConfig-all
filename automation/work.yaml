@@ -1,0 +1,29 @@
+######################################################################
+##  Time to Work - Set it up!
+#When work_mode is turned on, this automation turns off the kitchen, great room, and master bedroom lights while turning on the office lights to set up a work-friendly environment. 
+#It also prevents unnecessary re-triggering if the office lights are already on and optionally sends a notification.
+######################################################################
+
+- alias: Time to Work
+  id: 5ccdc0c7-5a90-4d0d-b3dd-d855fa6cf77d
+  trigger:
+    - platform: state
+      entity_id: input_boolean.work_mode
+      from: 'off'
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: light.office_lights
+      state: 'off'  # Only trigger if office lights are off
+
+  action:
+    - service: homeassistant.turn_off
+      entity_id:
+        - light.kitchen_lights
+        - light.great_room_lights
+        - light.master_bedroom_lights
+
+    - service: homeassistant.turn_on
+      entity_id:
+        - light.office_lights

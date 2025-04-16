@@ -1,0 +1,44 @@
+automation:
+  - alias: 'Motion in cloffice - Turn on Light'
+    id: 5a8e9dc3-a851-4cce-a054-d96f599db1f5
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.guest_room_2_occupancy_2
+        to: 'on'
+        from: 'off'
+
+    condition:
+      - condition: state
+        entity_id: person.lupe
+        state: 'home'
+      - condition: state
+        entity_id: switch.desk_lamp
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.guest_mode
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.disable_occupancy
+        state: 'off'
+      - condition: state
+        entity_id: sensor.is_weekend_sensor
+        state: 'False'
+      - condition: state
+        entity_id: sensor.work_time_sensor
+        state: 'working'
+      - condition: or
+        conditions:
+          - condition: time
+            after: '09:00:00'
+          - condition: state
+            entity_id: sun.sun
+            state: 'below_horizon'
+#          - condition: state
+#            entity_id: input_boolean.daylight_override
+#            state: 'on'
+
+
+    action:
+      - service: homeassistant.turn_on
+        entity_id: switch.desk_lamp

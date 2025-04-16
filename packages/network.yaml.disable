@@ -1,0 +1,147 @@
+#-------------------------------------------
+#  Network Related Packages
+#-------------------------------------------
+
+#-------------------------------------------
+sensor:
+  - platform: template
+    sensors:
+      network:
+        friendly_name: 'Network Monitor'
+        entity_id: []
+        value_template: >
+          {%- set domains = ['device_tracker'] -%}
+          {%- for domain in domains -%}
+            {%- for item in states[domain]
+                if (item.attributes.source_type is defined and item.state != 'home' and item.attributes.friendly_name not in
+                [
+                  'Chromecast Audio 2',
+                  'Carlo',
+                  'Entry Alarm Panel',
+                  'Dash Button',
+                  'Master Bedroom Roku',
+                  'Brother Printer',
+                  'Stacey',
+                  'Wii',
+                  'Withings Scale'
+                  ])
+                  and(as_timestamp(now()) - as_timestamp(item.last_changed)) > 600 -%}
+              {{ item.attributes.friendly_name }}
+              {%- if not loop.last -%}
+                {{'
+                '}}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endfor -%}
+  - platform: template
+    sensors:
+      network_detail:
+        friendly_name: 'Network Monitor Detail'
+        entity_id: []
+        value_template: >
+          {%- set domains = ['device_tracker'] -%}
+          {%- for domain in domains -%}
+            {%- for item in states[domain]
+                if (item.attributes.source_type is defined and item.state != 'home' and item.attributes.friendly_name not in
+                [
+                  'Carlo_Bolt_EV',
+                  'Chromecast Audio 2',
+                  'Carlo',
+                  'Entry Alarm Panel',
+                  'Dash Button',
+                  'Ipmdemounit',
+                  'Living Room Roku',
+                  'Master Bedroom Roku',
+                  'Brother Printer',
+                  'Stacey',
+                  'Wii',
+                  'Withings Scale'
+                  ])
+                  and(as_timestamp(now()) - as_timestamp(item.last_changed)) > 600 -%}
+              {{ item.attributes.friendly_name }} - {{((as_timestamp(now()) - as_timestamp(item.last_changed))/60) | round() }} minutes
+              {%- if not loop.last -%}
+                {{'
+                '}}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endfor -%}
+group:
+  network:
+    entities:
+      - sensor.ha_installed_version
+      - sensor.github_stats
+      - sensor.ccostanhomeassistantconfig_state
+      - sensor.ha_uptime
+      - sensor.last_boot_templated
+      - sensor.disk_use_percent
+      - sensor.homeassistant_v2db
+      - sensor.speedtest_download
+      - sensor.speedtest_upload
+      - sensor.network
+      - sensor.network_detail
+
+# Create full group with Loop!:
+# {% for state in states.device_tracker-%}
+# - {{ state.entity_id | lower }}
+# {{ ' '}}
+# {%- endfor -%}.
+
+  network_detail:
+    entities:
+      - device_tracker.chromecast_audio_master_bathroom
+      - device_tracker.google_home_mini_master_bedroom
+      - device_tracker.harmonyhub_great_room
+      - device_tracker.ipcam_side_house
+      - device_tracker.ipcam_driveway
+      - device_tracker.ring_elite_front_door
+      - device_tracker.chromecast_audio_master_bedroom
+      - device_tracker.philips_hue_great_room
+      - device_tracker.ipcam_front_porch
+      - device_tracker.chromecast_audio_deck
+      - device_tracker.wemo_kitchen_counter_light
+      - device_tracker.chromecast_audio_great_room
+      - device_tracker.pi_hole
+      - device_tracker.wemo_guest_room_1_lamp
+      - device_tracker.chromecast_audio_dining_room
+      - device_tracker.ipcam_backyard
+      - device_tracker.google_home_great_room
+      - device_tracker.google_home_mini_kitchen
+      - device_tracker.ipcam_back_deck
+      - device_tracker.chromecast_video_great_room
+      - device_tracker.ecobee_hallway
+      - device_tracker.ecobee_dining_room
+      - device_tracker.nvr
+      - device_tracker.wemo_holiday_lights
+      - device_tracker.hp_printer_office
+      - device_tracker.sw8_great_room
+      - device_tracker.sw8_guest_room_1_closet
+      - device_tracker.sw8_master_closet
+      
+      
+#-------------------------------------------------------------------------------------
+automation:
+  - alias: 'Device Status'
+    
+    trigger:
+      - platform: state
+        entity_id:
+          - sensor.network
+
+    condition:
+      - condition: template
+        value_template: >
+          {% if not is_state('sensor.network_detail', ' ') %}
+            false
+          {% else %}
+            true
+          {% endif %}
+    action:
+      - service: script.notify_engine
+        data:
+          value1: 'Offline Devices:'
+          value3: "{{ states.sensor.network_detail.state }}"
+          who: 'chris'
+
+      # - service: script.speech_engine
+      #   data:
+      #     value1: "The following Devices are in an Offline state {{ trigger.to_state.state }}"

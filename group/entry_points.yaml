@@ -1,0 +1,57 @@
+windows:
+  name: Windows
+  icon: mdi:window-open
+  entities:
+    - binary_sensor.kitchen_window_1
+    - binary_sensor.kitchen_window_2
+    - binary_sensor.dining_room_window_1
+    - binary_sensor.dinning_room_window_2
+    - binary_sensor.guestroom1_window_1
+    - binary_sensor.guestroom1_window_2
+    - binary_sensor.guestroom1_window_3
+    - binary_sensor.office_window_1
+    - binary_sensor.office_window_2
+    - binary_sensor.guestroom2_window_1
+    - binary_sensor.guestroom2_window_2
+    - binary_sensor.master_bedroom_window_1
+    - binary_sensor.master_bedroom_window_2
+    - binary_sensor.master_bedroom_window_3
+    - binary_sensor.great_room_window_1
+    - binary_sensor.great_room_window_2
+    - binary_sensor.great_room_window_3
+    - binary_sensor.great_room_window_4
+    - binary_sensor.master_bathroom_window_1
+    
+doors:
+  name: Doors
+  icon: mdi:door
+  entities:
+    - binary_sensor.frontdoor
+    - binary_sensor.backdoor
+
+entry_points:
+  name: Entry Points
+  icon: mdi:window-open
+  entities:
+    - binary_sensor.kitchen_window_1
+    - binary_sensor.kitchen_window_2
+    - binary_sensor.dining_room_window_1
+    - binary_sensor.dinning_room_window_2
+    - binary_sensor.guestroom1_window_1
+    - binary_sensor.guestroom1_window_2
+    - binary_sensor.guestroom1_window_3
+    - binary_sensor.office_window_1
+    - binary_sensor.office_window_2
+    - binary_sensor.guestroom2_window_1
+    - binary_sensor.guestroom2_window_2
+    - binary_sensor.master_bedroom_window_1
+    - binary_sensor.master_bedroom_window_2
+    - binary_sensor.master_bedroom_window_3
+    - binary_sensor.great_room_window_1
+    - binary_sensor.great_room_window_2
+    - binary_sensor.great_room_window_3
+    - binary_sensor.great_room_window_4
+    - binary_sensor.master_bathroom_window_1
+    - binary_sensor.frontdoor
+    - binary_sensor.backdoor    
+    

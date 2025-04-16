@@ -1,0 +1,103 @@
+#-------------------------------------------
+# 
+# Updated for AI notifications
+#
+#-------------------------------------------
+
+### Building out some Historical stats for AI. #####################
+command_line:
+  - sensor:
+      name: 'Lines of Code'
+      unique_id: lines_of_code
+      command: "find /config -name '*.yaml' | xargs cat | wc -l"
+      scan_interval: 20000
+
+#  - sensor:
+#      name: 'GitHub Stats'
+#      unique_id: github_stats_command
+#      command: 'curl https://api.github.com/repos/ccostan/home-assistantconfig'
+#      scan_interval: 20000
+#      value_template: '{{ value_json.name }}'
+#      json_attributes:
+#      - open_issues
+#      - stargazers_count
+
+sensor:
+  - platform: history_stats
+    name: Speech time
+    entity_id: media_player.office_speaker
+    state: 'playing'
+    type: time
+    end: '{{ now() }}'
+    duration:
+      hours: 24
+
+  - platform: history_stats
+    name: TV time
+    entity_id: media_player.chromecast7881
+    state: 'playing'
+    type: time
+    end: '{{ now() }}'
+    duration:
+      hours: 24
+
+  - platform: history_stats
+    name: Landscaping Light time
+    entity_id: light.deck_lights
+    state: 'on'
+    type: time
+    end: '{{ now() }}'
+    duration:
+      hours: 24
+
+### Building some interesting stats for tweeting. ###
+  - platform: template
+    sensors:
+      sensor_count:
+        friendly_name: 'Number of Sensors'
+        value_template: >-
+          {{ states.sensor | list | count }}
+
+      automation_count:
+        friendly_name: 'Number of Automations'
+        value_template: >-
+          {{ states.automation| list | count }}
+
+      script_count:
+        friendly_name: 'Number of Scripts'
+        value_template: >
+          {{ states.script | list | count }}
+
+      binary_sensor_count:
+        friendly_name: 'Number of Binary Sensors'
+        value_template: >-
+          {{ states.binary_sensor | list | count }}
+
+      tracker_count:
+        friendly_name: 'Number of Devices'
+        value_template: >-
+          {{ states.device_tracker| list | count }}
+      lights_count:
+        friendly_name: 'Number of Lights'
+        value_template: >
+          {{ states.light | list | count }}
+
+      lights_on_count:
+        friendly_name: "Number of lights on"
+        value_template: >-
+           {% set lights = states.light | selectattr('state', 'eq', 'on') | list %}
+           {% set qty = lights | count %}
+           {% set p1 = 'lights are' if qty > 1 else 'light is' %}
+
+           {% if qty == 0 %} 
+            No lights on.
+           {% else %}
+            {{ qty }} {{ p1 }} on.
+           {% endif %}
+
+      camera_count:
+        friendly_name: 'Number of online Cameras'
+        value_template: >
+          {{ states.camera | list | count }}
+
+#############################################################

@@ -1,0 +1,43 @@
+- alias: 'People Greeting'
+  id: 29c5c9dd-550a-4761-a224-78cdc3dd9f43
+  mode: single
+  trigger:
+    - platform: state
+      entity_id:
+        - person.chris
+        - person.samantha
+        - person.kara
+        - person.justin
+        - person.tata
+      from: 'not_home'
+      to: 'home'
+
+  action:
+    # This Group is defined in the groups directory.
+    - service: group.set
+      data:
+        object_id: "arriving"
+        add_entities: >-
+          {{ trigger.to_state.entity_id }}
+    - wait_template: "{{ states.binary_sensor.frontdoor.state == 'on' }}"
+      timeout: '00:05:00'
+
+    - delay: '00:01:00'
+    - service: script.speech_engine
+      data:
+        personarriving: >
+          {% set person = expand('group.arriving')|map(attribute='name')|join(' and ') %}
+          {%- macro greeting_sentence(person) -%}
+            {{"[Welcome " + person + " home]" }}
+          {%- endmacro -%}
+
+          {{greeting_sentence(person)}}
+        call_no_announcement: 1
+        call_window_check: 1
+        call_responsibilities: 1
+
+    - service: group.set
+      data:
+        object_id: "arriving"
+        entities: []
+

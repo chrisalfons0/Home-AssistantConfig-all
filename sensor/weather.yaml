@@ -1,0 +1,66 @@
+
+
+- platform: min_max
+  name: Current Interior Temperature Raw
+  type: mean
+  entity_ids:
+      - sensor.guest_room_2_temperature
+      - sensor.guest_room_2_lth_temperature
+      - sensor.guest_room_1_temperature
+      - sensor.guest_room_1_lth_temperature
+      - sensor.kitchen_ltr_temperature
+      - sensor.master_bedroom_temperature
+      - sensor.master_bedroom_lth_temperature
+      - sensor.great_room_temperature
+      - sensor.office_temperature
+      - sensor.office_lth_temperature
+      - sensor.dining_room_temperature
+      - sensor.great_room_sensor_zwave_air_temperature
+
+- platform: min_max
+  name: Current Interior Humidity Raw
+  type: mean
+  entity_ids:
+      - sensor.guest_room_2_lth_humidity
+      - sensor.guest_room_1_lth_humidity
+      - sensor.office_lth_humidity
+      - sensor.master_bedroom_lth_humidity
+      - sensor.kitchen_ltr_humidity
+      - sensor.great_room_sensor_zwave_humidity
+
+
+
+- platform: min_max
+  name: Current Crawl Humidity Raw
+  type: mean
+  entity_ids:
+      - sensor.crawl_sensor_2_zwave_humidity
+      - sensor.crawl_sensor_1_zwave_humidity
+
+- platform: min_max
+  name: Current Crawl Temperature Raw
+  type: mean
+  entity_ids:
+      - sensor.crawl_sensor_1_zwave_air_temperature
+      - sensor.crawl_sensor_2_zwave_air_temperature
+
+- platform: min_max
+  name: Current Attic Humidity Raw
+  type: mean
+  entity_ids:
+      - sensor.attic_sensor_2_zwave_humidity
+      - sensor.attic_sensor_1_zwave_humidity
+
+- platform: min_max
+  name: Current Attic Temperature Raw
+  type: mean
+  entity_ids:
+      - sensor.attic_sensor_2_zwave_air_temperature
+      - sensor.attic_sensor_1_zwave_air_temperature
+
+- platform: command_line
+  name: CPU Temperature
+  command: "cat /sys/class/thermal/thermal_zone0/temp"
+    # If errors occur, remove degree symbol below
+  unit_of_measurement: '°C'
+  value_template: "{{ '%.1f' | format(value | multiply(0.001)) }}" # RPi & NUC

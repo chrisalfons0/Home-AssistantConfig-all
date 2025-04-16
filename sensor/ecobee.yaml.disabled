@@ -1,0 +1,23 @@
+###################################################
+#Ecobee
+###################################################
+
+- platform: template
+  sensors:
+     hvac_on_mode_hallway:
+       value_template: "{{ is_state_attr('climate.hallway', 'fan', 'on') }}"
+
+- platform: template
+  sensors:
+     hvac_on_mode_dining_room:
+       value_template: "{{ is_state_attr('climate.dining_room', 'fan', 'on') }}"
+
+        ##########################################################
+        ## Thermostat
+        ##########################################################
+
+- platform: template
+  sensors:
+    thermostat_climate_mode:
+      value_template: '{{ states.climate.hallway.attributes.preset_mode }}'
+      friendly_name: 'Thermostat Mode'

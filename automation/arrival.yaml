@@ -1,0 +1,70 @@
+#-------------------------------------------
+#  When some one arrives home, at night, turn on the lights.
+#-------------------------------------------
+
+- alias: Arrival Lights Sunset
+  id: 9521d521-00dc-4116-b467-5150735fcfgi
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: group.family
+      to: 'home'
+
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+    - condition: state
+      entity_id: light.kitchen_lights
+      state: 'off'
+    - condition: state
+      entity_id: light.master_bedroom_lights
+      state: 'off'
+    - condition: state
+      entity_id: light.great_room_lights
+      state: 'off'
+    - condition: state
+      entity_id: light.dining_room_lights
+      state: 'off'
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id:
+        - light.kitchen_can_lights
+        - switch.counter_lights
+        - light.master_bedroom_nightstand_lights
+        - light.great_room_accent_lights
+        - light.dining_room_can_lights
+
+#-------------------------------------------
+#  When some one arrives home, during the day, turn on the lights.
+#-------------------------------------------
+
+
+- alias: Arrival Lights Daytime
+  id: 9521d521-00dc-4117-b467-5150735gcfgi
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: group.family
+      to: 'home'
+
+  condition:
+    - condition: state
+      entity_id: light.kitchen_lights
+      state: 'off'
+    - condition: state
+      entity_id: input_boolean.disable_home_away
+      state: 'off'
+
+
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id:
+        - light.kitchen_can_lights
+        - switch.counter_lights
+        - light.dining_room_can_lights

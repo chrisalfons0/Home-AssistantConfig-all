@@ -1,0 +1,447 @@
+#################################################################
+## Water Sensor Automations
+#################################################################
+
+        ##########################################################
+        ## Flash Lights when Water Detected
+        ##########################################################
+
+- alias: Water Works - Sound Alarm When Water Detected Lights
+  id: 266d0c4d-5cf6-46bb-b821-d24896b1df3b
+
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.guest_bathroom_sink_water_sensor
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.kitchen_sink_water_sensor
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.dishwasher_water_sensor
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.laundry_room_water_sensor
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.chris_vanity_water_sensor
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.lupe_vanity_water_sensor
+      from: 'off'
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: group.household
+      state: 'home'
+    - condition: state
+      entity_id: input_boolean.disable_water_automations
+      state: 'off'
+
+  action:
+    - service: light.turn_on
+      entity_id:
+        - light.lamp_office
+      data:
+       brightness_pct: 100
+       color_name: "blue"
+    - service: light.turn_on
+      entity_id:
+        - light.nightstand_master_1
+        - light.nightstand_master_2
+      data:
+       flash: long
+
+        ##########################################################
+        ## Shut Off Water Main When Water Detected
+        ##########################################################
+
+# - alias: Water Works - Shut Off Water Main When Water Detected
+#   id: 'f06509c5-34f4-483c-8991-fd3639c07b9f'
+
+#   trigger:
+#     - platform: state
+#       entity_id: binary_sensor.basement_drain_water_sensor_liquid_detected
+#       from: 'off'
+#       to: 'on'
+#     - platform: state
+#       entity_id: binary_sensor.kitchen_sink_water_sensor
+#       from: 'off'
+#       to: 'on'
+#     - platform: state
+#       entity_id: binary_sensor.bathroom_sink_water_sensor
+#       from: 'off'
+#       to: 'on'
+#     - platform: state
+#       entity_id: binary_sensor.upstairs_bathrooom_water_sensor
+#       from: 'off'
+#       to: 'on'
+#     - platform: state
+#       entity_id: binary_sensor.utility_sink_water_sensor
+#       from: 'off'
+#       to: 'on'
+#     - platform: state
+#       entity_id: binary_sensor.washing_machine_water_sensor
+#       from: 'off'
+#       to: 'on'
+
+#   condition:
+#     - condition: state
+#       entity_id: input_boolean.disable_water_automations
+#       state: 'off'
+#     - condition: state
+#       entity_id: switch.water_main
+#       state: 'on'
+
+#   action:
+#     - service: switch.turn_off
+#       entity_id:
+#         - switch.water_main
+
+        ##########################################################
+        ## Shut Off Water Main When Vacation Mode On
+        ##########################################################
+
+# - alias: Water Works - Shut Off Water Main When Vacation Mode On
+#   id: '0e7fe97d-081a-49e5-8850-c31e5ad07c98'
+
+#   trigger:
+#     - platform: state
+#       entity_id: input_boolean.vacation_mode
+#       from: 'off'
+#       to: 'on'
+
+#   condition:
+#     - condition: state
+#       entity_id: input_boolean.disable_water_automations
+#       state: 'off'
+#     - condition: state
+#       entity_id: input_boolean.disable_home_away
+#       state: 'off'
+#     - condition: state
+#       entity_id: switch.water_main
+#       state: 'on'
+
+#   action:
+#     - service: switch.turn_off
+#       entity_id:
+#         - switch.water_main
+
+        ##########################################################
+        ## Turn On Water Main When Vacation Mode Off
+        ##########################################################
+
+# - alias: Water Works - Turn On Water Main When Vacation Mode Off
+#   id: '29a32a36-0cf3-4e5c-888e-be36f0d49f69'
+
+#   trigger:
+#     - platform: state
+#       entity_id: input_boolean.vacation_mode
+#       from: 'on'
+#       to: 'off'
+
+#   condition:
+#     - condition: state
+#       entity_id: input_boolean.disable_water_automations
+#       state: 'off'
+#     - condition: state
+#       entity_id: input_boolean.disable_home_away
+#       state: 'off'
+#     - condition: state
+#       entity_id: switch.water_main
+#       state: 'off'
+
+#   action:
+#     - service: switch.turn_on
+#       entity_id:
+#         - switch.water_main
+
+#################################################################
+## Notifications
+#################################################################
+
+        ##########################################################
+        ## Water Main Turned Off iOS Notification
+        ##########################################################
+
+# - alias: Water Works - Water Main Turned Off iOS Notification
+#   id: '8f8e4045-6b6d-4461-9f8c-08a31942763e'
+
+#   trigger:
+#     - platform: state
+#       entity_id: switch.water_main
+#       from: 'on'
+#       to: 'off'
+
+#   condition:
+#     - condition: state
+#       entity_id: input_boolean.disable_notifications
+#       state: 'off'
+
+#   action:
+#     - service: notify.chris_devices
+#       data:
+#         message: Water Main Has Been Shut Off!
+#         data:
+#           tag: water-main
+#           group: water
+
+        ##########################################################
+        ## Water Main Turned On iOS Notification
+        ##########################################################
+
+# - alias: Water Works - Water Main Turned On iOS Notification
+#   id: '78ece142-594d-4bbb-8f61-453474977d2a'
+
+#   trigger:
+#     - platform: state
+#       entity_id: switch.water_main
+#       from: 'off'
+#       to: 'on'
+
+#   condition:
+#     - condition: state
+#       entity_id: input_boolean.disable_notifications
+#       state: 'off'
+#     - condition: state
+#       entity_id: input_boolean.disable_startup_notifications
+#       state: 'off'
+
+#   action:
+#     - service: notify.chris_devices
+#       data:
+#         message: Water Main Has Been Turned Back On
+#         data:
+#           tag: water-main
+#           group: water
+
+
+        ##########################################################
+        ## Kitchen Sink Water Sensor iOS Notification
+        ##########################################################
+
+- alias: Water Works - Kitchen Sink Water Sensor iOS Notification
+  id: d222a6d2-3693-4c59-9136-a1b8952f7c69
+
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.kitchen_sink_water_sensor
+      from: 'off'
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: Water Detected Under Kitchen Sink!
+        data:
+          tag: water-leak
+          group: water
+
+        ##########################################################
+        ## Guest Bathroom Sink Water Sensor iOS Notification
+        ##########################################################
+
+- alias: Water Works - Guest Bathroom Sink Water Sensor iOS Notification
+  id: 665defb2-0649-48ad-9036-913b07c46983
+
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.guest_bathroom_sink_water_sensor
+      from: 'off'
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: Water Detected Under Guest Bathroom Sink!
+        data:
+          tag: water-leak
+          group: water
+
+        ##########################################################
+        ## Chris's Vanity Sensor iOS Notification
+        ##########################################################
+
+- alias: Water Works - Chris's Vanity Water Sensor iOS Notification
+  id: 483a4ab2-e76c-4276-b6d6-298fef0b2923
+
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.chris_vanity_water_sensor
+      from: 'off'
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: Water Detected in Chris's Vanity!
+        data:
+          tag: water-leak
+          group: water
+
+        ##########################################################
+        ## Lupe's Vanity Sensor iOS Notification
+        ##########################################################
+
+- alias: Water Works - Lupe's Vanity Water Sensor iOS Notification
+  id: a27a9c4e-b3e9-4a70-9a42-83294a568f2f
+
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.lupe_vanity_water_sensor
+      from: 'off'
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: Water Detected in Lupe's Vanity!
+        data:
+          tag: water-leak
+          group: water
+
+        ##########################################################
+        ## Laundry Room Water Sensor iOS Notification
+        ##########################################################
+
+- alias: Water Works - Laundry Room Water Sensor iOS Notification
+  id: 347abd1e-812c-4fb5-a0c4-227e98dbc47b
+
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.laundry_room_water_sensor
+      from: 'off'
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: Water Detected in Laundry Room!
+        data:
+          tag: water-leak
+          group: water
+
+        ##########################################################
+        ## Dishwasher Water Sensor iOS Notification
+        ##########################################################
+
+- alias: Water Works - Dishwasher Water Sensor iOS Notification
+  id: ec011d64-ab73-4a1d-b62a-b9f98a412120
+
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.dishwasher_water_sensor
+      from: 'off'
+      to: 'on'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: Water Detected at the dishwasher!
+        data:
+          tag: water-leak
+          group: water
+
+
+
+
+        ##########################################################
+        ## Water Sensor Low Battery Notification
+        ##########################################################
+
+- alias: Water Works - Low Battery Notification
+  id: 61a92c2d-81fd-466b-8a5c-1aec7bd415a1
+
+  mode: parallel
+  trigger:
+    - platform: numeric_state
+      entity_id:
+        - sensor.kitchen_sink_water_sensor_batt
+        - sensor.guest_bathroom_sink_water_sensor_batt
+        - sensor.dishwasher_warer_sensor_batt
+        - sensor.chris_vanity_water_sensor_batt
+        - sensor.washing_machine_water_sensor_batt
+        - sensor.lupe_vanity_water_sensor_batt
+      below: 30
+      for:
+        hours: 1
+        minutes: 0
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: Water Sensor {{ trigger.to_state.attributes.friendly_name }} Low Battery
+        data:
+          tag: battery
+          group: battery
+
+#################################################################
+## Water Meter Automations
+#################################################################
+
+        ##########################################################
+        ## Water Leak Detected iOS Notification
+        ##########################################################
+
+# - alias: Water Works - Water Leak Detected iOS Notification
+#   id: 'water_works_water_leak_detected_ios_notification'
+
+#   trigger:
+#     - platform: state
+#       entity_id: binary_sensor.water_meter_leak_detected
+#       from: 'off'
+#       to: 'on'
+
+#   condition:
+#     - condition: state
+#       entity_id: input_boolean.disable_notifications
+#       state: 'off'
+
+#   action:
+#     - service: notify.chris_devices
+#       data:
+#         message: Possible Water Leak Detected!
+#         data:
+#           tag: water-leak
+#           group: water

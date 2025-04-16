@@ -1,0 +1,7 @@
+notify:
+  - name: ios_family
+    platform: group
+    services:
+      - service: mobile_app_chris_iphone
+
+mobile_app:

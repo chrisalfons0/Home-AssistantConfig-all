@@ -1,0 +1,6 @@
+
+locks:
+  name: Locks
+  entities:
+    - lock.backdoor_lock
+    - lock.frontdoor_lock

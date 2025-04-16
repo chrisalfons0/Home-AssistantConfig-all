@@ -1,0 +1,3 @@
+fans:
+  entities:
+    - fan.gym_fan

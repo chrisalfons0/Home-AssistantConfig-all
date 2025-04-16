@@ -1,0 +1,40 @@
+###################################
+##
+## 
+###################################
+
+- alias: Entry Point Chime
+  id: ae0fb37b-67cf-48a4-a609-999d44272e90
+  mode: single  # Prevents multiple triggers at once
+  
+  trigger:
+    - platform: state
+      entity_id:
+        - group.entry_points
+
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+
+  action:
+    - service: script.amp_settings
+      data:
+        media_player: 'media_player.office_speaker'
+        volume_level: 0.50
+
+    - service: media_player.play_media
+      data:
+        entity_id: >
+          {% if states.group.bed.state == 'off' %}
+          media_player.office_speaker
+          {% else %}
+          media_player.office_speaker
+          {% endif %}
+        media_content_id: >
+          {% if trigger.to_state.state == 'on' %}
+          https://raw.githubusercontent.com/CCOSTAN/Home-AssistantConfig/master/config/sounds/one-tone-chime.mp3
+          {% else %}
+          https://raw.githubusercontent.com/CCOSTAN/Home-AssistantConfig/master/config/sounds/two-tone-chime.mp3
+          {% endif %}
+        media_content_type: audio/mp4

@@ -1,0 +1,110 @@
+#################################################################
+## Alarm Automations
+#################################################################
+
+        ######################################################################
+        ##  ALARM TRIGGERED - ARMED AWAY MODE
+        ##  
+        ##  This automation activates when the alarm system is triggered while 
+        ##  in "Armed Away" mode. If no household members are home and 
+        ##  guest mode is off, it runs emergency actions:
+        ##  - Executes the emergency script.
+        ##  - Turns on security-related devices (e.g., amps).
+        ##  - Broadcasts a random warning message via text-to-speech (TTS).
+        ######################################################################
+
+- alias: Alarm - Triggered Armed Away
+  id: 0832c943-4ebc-47da-9ad9-780285d21cc0
+  mode: single
+
+  triggers:
+    - trigger: state
+      entity_id: alarm_control_panel.abode_alarm
+      to: 'triggered'
+
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: group.household
+          state: 'home'  # Ensures no one is home
+    - condition: state
+      entity_id: input_boolean.guest_mode
+      state: 'off'  # Ensures guest mode isn't active
+
+  actions:
+    - service: script.emergency # Executes emergency procedures
+    
+    - service: homeassistant.turn_on
+      entity_id: 
+        - switch.amps  # Activates security-related devices
+          
+    - action: tts.cloud_say
+      data:
+        cache: false
+        entity_id: all
+        message: >
+          {{ [
+          "You are not Authorized to be Here. Law Enforcement Has Been Notified!",
+          "Warning! You have triggered a security alarm. Authorities have been notified. Leave immediately!",
+          "Intruder alert! This property is under surveillance. Law enforcement is on the way!",
+          "Attention! You are trespassing. Vacate the premises now, or face legal consequences!",
+          "Unauthorized entry detected. Security measures activated. Leave or be confronted!",
+          "You are being recorded. Police have been contacted. Do not attempt to proceed!",
+          "Danger! This home is protected. Your presence has been logged and reported!",
+          "Security breach detected. Exit immediately or risk confrontation!",
+          "This is a restricted area! Your movements are being tracked. Evacuate at once!",
+          "Warning! Alarm has been triggered. You have 30 seconds before law enforcement arrives!",
+          "You have 10 seconds to exit before additional security measures engage!"
+          ] | random }}
+
+        ######################################################################
+        ##  ALARM TRIGGERED - ARMED HOME MODE
+        ##
+        ##  This automation activates when the alarm system is triggered 
+        ##  while in "Armed Home" mode and at least one household member is 
+        ##  home. When triggered, it:
+        ##  - Runs the emergency script.
+        ##  - Sends a critical notification to Chris's devices.
+        ##  - Provides actions to disarm the alarm or turn off the siren.
+        ######################################################################
+
+- alias: Alarm - Triggered Armed Home
+  id: 61a5eaaa-f213-47ee-a504-b22b87cd1aa9
+  mode: single 
+
+  triggers:
+    - trigger: state
+      entity_id: alarm_control_panel.abode_alarm
+      to: 'triggered'
+
+  conditions:
+    - condition: state
+      entity_id: group.household
+      state: 'home' # Ensures at least one household member is home
+
+  action:
+    - service: script.emergency
+    
+    - action: notify.chris_devices
+      data:
+        message: Alarm Triggered!
+        data:
+          push:
+            sound:
+              name: default
+              critical: 1
+              volume: 1.0
+          tag: alarm # Groups notifications together
+          
+#          entity_id:
+#           - camera.front_door_live_view
+
+          actions:
+            - action: "disarm_alarm"
+              title: "Disable Alarm System"
+              destructive: true
+              activationMode: background
+            - action: "siren_off"
+              title: "Siren Off"
+              activationMode: background

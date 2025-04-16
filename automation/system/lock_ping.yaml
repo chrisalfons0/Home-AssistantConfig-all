@@ -1,0 +1,28 @@
+        #################################################################
+        ## Ping Locks if they become Unavailable
+        #################################################################
+
+- alias: System - Ping Locks if they become Unavailable
+  id: 'system_ping_locks_if_they_become_unavailable'
+
+  trigger:
+    - platform: state
+      entity_id: lock.frontdoor_lock
+      to: 'unavailable'
+      for:
+        hours: 0
+        minutes: 5
+        seconds: 0
+    - platform: state
+      entity_id: lock.backdoor_lock
+      to: 'unavailable'
+      for:
+        hours: 0
+        minutes: 5
+        seconds: 0
+  action:
+    - service: zwave_js.ping
+      target:
+        entity_id:
+          - lock.frontdoor_lock
+          - lock.backdoor_lock

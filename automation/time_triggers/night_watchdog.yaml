@@ -1,0 +1,47 @@
+#####################################################################
+##  Stuff that needs to happen after 10pm.
+######################################################################
+
+- alias: Automated Night WatchDog!
+  id: 4ce973ea-b78a-4440-99d1-7f8eb4400eab
+  trigger:
+    - platform: state
+      entity_id: switch.amps
+      to: 'on'
+      for: '00:10:00'
+    - platform: state
+      entity_id: media_player.master_bedroom_speakers
+      to: 'off'
+      for: '00:05:00'
+    - platform: state
+      entity_id: media_player.dining_room_speakers
+      to: 'off'
+      for: '00:05:00'
+    - platform: state
+      entity_id: media_player.deck_speakers
+      to: 'off'
+      for: '00:05:00'
+
+
+  condition:
+    condition: or
+    conditions:
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: group.family
+            state: 'not_home'
+          - condition: state
+            entity_id: input_boolean.guest_mode
+            state: 'off'
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: input_boolean.guest_mode
+            state: 'off'
+
+
+  action:
+    - service: switch.turn_off
+      data:
+        entity_id: "{{ trigger.entity_id }}"

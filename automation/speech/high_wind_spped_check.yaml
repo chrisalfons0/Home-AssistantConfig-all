@@ -1,0 +1,44 @@
+###################################
+## Tornados are no Joke.
+###################################
+
+- alias: 'High Wind Speed Notification'
+  id: 5cc158a5-038a-4078-a9fb-c9f9cf9ecd49
+  mode: single
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_wind_speed
+      above: 24
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_wind_speed
+      above: 40
+    - platform: numeric_state
+      entity_id: sensor.dark_sky_wind_speed
+      above: 60
+
+  action:
+    - service: script.notify_engine
+      data:
+        value1: 'VERY HIGH WINDS:'
+        value2: "{{ states('sensor.dark_sky_wind_speed')}}"
+
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.alert_mode
+
+    - service: script.speech_engine
+      data:
+        value1: >
+          {% set windspeed = states.sensor.dark_sky_wind_speed.state | round %}
+          {% if ( windspeed > 25 ) and ( windspeed <= 40 ) %}
+             HEAVY WINDS!!! Current Wind Speed is : {{windspeed}} mph! Be VERY careful outdoors!
+          {% elif ( windspeed > 40 ) and ( windspeed <= 60 ) %}
+             Warning! Wind speed is {{windspeed}} MPH. FIND SHELTER IMMEDIATELY!
+          {% elif ( windspeed > 60 ) %}
+             HURRICANE WINDS. FIND SHELTER, AND STAY INDOORS!
+          {% endif %}
+        call_window_check: 0
+
+    - service: script.emergency
+    
+    - delay:
+        hours: 2

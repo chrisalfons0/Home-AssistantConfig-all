@@ -1,0 +1,24 @@
+#################################################################
+## NAS-01 Warning iOS Notification
+#################################################################
+
+- alias: System - NAS-01 Warning iOS Notification
+  id: 9d7c19bb-1c53-455d-ada8-6ae0afab6f82
+
+  trigger:
+    - platform: state
+      entity_id: sensor.medlockparknas1_volume_1_status
+      to: 'warning'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: NAS RAID Failing
+        data:
+          tag: nas
+          group: system

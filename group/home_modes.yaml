@@ -1,0 +1,10 @@
+home_modes:
+  name: Home Modes  
+  entities:
+    - input_boolean.guest_mode
+    - input_boolean.work_mode
+    - input_boolean.work_from_home_mode    
+    - input_boolean.alert_mode
+    - input_boolean.speech_notifications
+    - input_boolean.text_notifications
+    - input_boolean.last_message

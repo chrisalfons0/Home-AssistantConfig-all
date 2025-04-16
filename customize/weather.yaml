@@ -1,0 +1,15 @@
+###################################
+##  Ecobee Section
+###################################
+climate.living_room:
+  friendly_name: 'Ecobee Dinning Room'
+  icon: mdi:air-conditioner
+climate.hallway:
+  friendly_name: 'Ecobee Hallway'
+  icon: mdi:air-conditioner
+
+###################################
+##  Sun Section
+###################################
+sun.sun:
+  hidden: true

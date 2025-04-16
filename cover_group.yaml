@@ -1,0 +1,16 @@
+
+#################################################################
+## Cover Group
+#################################################################
+
+        ##########################################################
+        ## Master Bedroom
+        ##########################################################
+
+  - platform: group
+    name: Masterbedroom Blinds
+    unique_id: 06cc88d9-d3d9-495e-aa7a-3d962effea37
+    entities:
+      - cover.masterbedroom_blinds_right
+      - cover.masterbedroom_blinds_left
+      - cover.masterbedroom_blinds_center

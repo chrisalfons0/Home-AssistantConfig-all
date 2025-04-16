@@ -1,0 +1,104 @@
+#################################################################
+## Blinds Automations
+#################################################################
+
+        ##########################################################
+        ## Close All Blinds when Sun Below Horizon
+        ##########################################################
+
+- alias: Blinds - Close All Blinds when Sun Below Horizon
+  id: 5c06e8a8-0a9d-4f29-9706-83f778634358
+
+  trigger:
+    - platform: state
+      entity_id: sun.sun
+      from: 'above_horizon'
+      to: 'below_horizon'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_blinds
+      state: 'off'
+    - condition: state
+      entity_id: cover.masterbedroom_blinds
+      state: 'open'
+
+  action:
+    - service: cover.close_cover
+      data:
+        entity_id:
+          - cover.masterbedroom_blinds
+
+#################################################################
+## Bedroom
+#################################################################
+
+        ##########################################################
+        ## Open Bedroom Blinds at 8:15a Weekdays
+        ##########################################################
+
+- alias: Blinds - Open Master Bedroom Blinds at 0815 Weekdays
+  id: 3a8c930a-4b49-49e8-abc0-3c23ef54c6c9
+
+  trigger:
+   - platform: time
+     at: '08:15:00'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_blinds
+      state: 'off'
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: time
+      weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+    - condition: state
+      entity_id: cover.masterbedroom_blinds
+      state: 'closed'
+
+  action:
+    - service: cover.open_cover
+      entity_id:
+        - cover.masterbedroom_blinds
+
+        ##########################################################
+        ## Open Bedroom Blinds at 9:15a Weekends
+        ##########################################################
+
+- alias: Blinds - Open Master Bedroom Blinds at 0900 Weekends
+  id: 3ee820a0-63be-413d-b2f5-b0bd0bba3936
+
+  trigger:
+   - platform: time
+     at: '09:00:00'
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_blinds
+      state: 'off'
+    - condition: state
+      entity_id: group.family
+      state: 'home'
+    - condition: time
+      weekday:
+        - sat
+        - sun
+    - condition: state
+      entity_id: cover.masterbedroom_blinds
+      state: 'closed'
+
+  action:
+    - service: cover.open_cover
+      entity_id:
+        - cover.masterbedroom_blinds
+
+
+
+
+

@@ -1,0 +1,69 @@
+
+
+automation:
+  - alias: 'Motion in the Gym - Turn on Lights'
+    id: 5a8e9dc3-a851-4cce-a054-d98f599cb1f5
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.gym_occupancy_3
+        to: 'on'
+        from: 'off'
+
+    condition:
+      - condition: state
+        entity_id: group.family
+        state: 'home'
+      - condition: state
+        entity_id: switch.gym_ceiling_light
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.guest_mode
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.disable_occupancy
+        state: 'off'
+      - condition: or
+        conditions:
+          - condition: numeric_state
+            entity_id: sensor.gym_lth_lux
+            below: 2.0
+#          - condition: state
+#            entity_id: binary_sensor.sleepnumber_carlo_carlo_is_in_bed
+#            state: 'off'
+#      - condition: or
+#        conditions:
+#          - condition: time
+#            after: '18:00:00'
+#          - condition: state
+#            entity_id: sun.sun
+#            state: 'below_horizon'
+#          - condition: state
+#            entity_id: input_boolean.daylight_override
+#            state: 'on'
+
+
+    action:
+      - service: homeassistant.turn_on
+        entity_id: switch.gym_ceiling_light
+
+  - alias: 'Motion in the Gym - Turn off Lights'
+    id: 346d8210-2160-4911-8be1-1ad706cc69d1
+    trigger:
+      - platform: state
+        entity_id:
+          - binary_sensor.gym_occupancy_3
+        to: 'off'
+        from: 'on'
+        for:
+          minutes: 60
+
+    condition:
+      - condition: state
+        entity_id: switch.gym_ceiling_light
+        state: 'on'
+
+
+    action:
+      - service: homeassistant.turn_off
+        entity_id: switch.gym_ceiling_light

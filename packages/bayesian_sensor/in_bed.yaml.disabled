@@ -1,0 +1,87 @@
+binary_sensor:
+  name: 'both_in_bed'
+  platform: 'bayesian'
+  prior: 0.42
+  probability_threshold: 0.95
+  observations:
+    - platform: 'state'
+      entity_id: 'binary_sensor.master_bedroom_occupancy2'
+      prob_given_true: 0.8
+      prob_given_false: 0.71
+      to_state: 'off'
+    - platform: 'state'
+      entity_id: 'binary_sensor.master_bedroom_occupancy2'
+      prob_given_true: 0.2
+      prob_given_false: 0.29
+      to_state: 'on'
+    - platform: 'state'
+      entity_id: 'media_player.great_room_tv'
+      prob_given_true: 0.03
+      prob_given_false: 0.5
+      to_state: 'on'
+    - platform: 'state'
+      entity_id: 'media_player.great_room_tv'
+      prob_given_true: .98
+      prob_given_false: 0.5
+      to_state: 'off'
+    - platform: 'state'
+      entity_id: 'binary_sensor.great_room_occupancy_2'
+      prob_given_true: 0.01
+      prob_given_false: 0.48
+      to_state: 'on'
+    - platform: 'state'
+      entity_id: 'binary_sensor.great_room_occupancy_2'
+      prob_given_true: 0.99
+      prob_given_false: 0.43
+      to_state: 'off'
+    - platform: 'state'
+      entity_id: 'binary_sensor.kitchen_occupancy'
+      prob_given_true: 0.01
+      prob_given_false: 0.57
+      to_state: 'on'
+    - platform: 'state'
+      entity_id: 'binary_sensor.kitchen_occupancy'
+      prob_given_true: 0.99
+      prob_given_false: 0.43
+      to_state: 'off'
+    - platform: 'state'
+      entity_id: 'binary_sensor.pixel_3_chris_new_is_charging'
+      prob_given_true: .9
+      prob_given_false: 0.29
+      to_state: 'on'
+    - platform: 'state'
+      entity_id: 'binary_sensor.pixel_3_chris_new_is_charging'
+      prob_given_true: 0.1
+      prob_given_false: 0.71
+      to_state: 'off'
+    - platform: 'state'
+      entity_id: 'sensor.mgmonterroso_battery_state_2'
+      prob_given_true: .9
+      prob_given_false: .29
+      to_state: 'Charging'
+    - platform: 'state'
+      entity_id: 'sensor.mgmonterroso_battery_state_2'
+      prob_given_true: 0.01
+      prob_given_false: .71
+      to_state: 'Not Charging'
+    - platform: 'state'
+      entity_id: 'group.family'
+      prob_given_true: .99
+      prob_given_false: 0.43
+      to_state: 'home'
+    - platform: 'state'
+      entity_id: 'group.family'
+      prob_given_true: .01
+      prob_given_false: 0.57
+      to_state: 'away'
+    - platform: 'state'
+      entity_id: 'sensor.night_time_sensor'
+      prob_given_true: .99
+      prob_given_false: 0.21
+      to_state: 'night'      
+    - platform: 'state'
+      entity_id: 'sensor.night_time_sensor'
+      prob_given_true: .01
+      prob_given_false: 0.79
+      to_state: 'day'         
+

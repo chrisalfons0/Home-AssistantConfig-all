@@ -1,0 +1,116 @@
+#################################################################
+## iOS Actions
+#################################################################
+
+        #################################################################
+        ## Bedtime
+        #################################################################
+
+- alias: iOS Action - Bedtime
+  id: 'c62ab68c-da16-4e08-b9f2-6da44d4c65e8'
+
+  trigger:
+    - platform: event
+      event_type: ios.action_fired
+      event_data:
+        actionName: 'Bedtime'
+
+  action:
+    - service: homeassistant.turn_on
+      entity_id:
+        - input_boolean.bedtime
+
+
+#################################################################
+## iOS Actionable Notifications
+#################################################################
+
+        #################################################################
+        ## Unlock Doors
+        #################################################################
+
+- alias: iOS Action - Unlock Doors
+  id: '0998a115-5de7-4a41-886b-8b028bd4d8f8'
+
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "unlock_doors"
+
+  action:
+    - service: lock.unlock
+      entity_id:
+        - lock.backdoor_lock
+        - lock.frontdoor_lock
+
+        #################################################################
+        ## Unlock Front Door
+        #################################################################
+
+- alias: iOS Action - Unlock Front Door
+  id: '6ef0c01c-2bcc-403e-99ac-99cb80b60e07'
+
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "unlock_front_door"
+
+  action:
+    - service: lock.unlock
+      entity_id:
+        - lock.frontdoor_lock
+
+
+
+        #################################################################
+        ## Disarm Alarm
+        #################################################################
+
+- alias: iOS Action - Silence Alarm
+  id: 'dc056bf0-1dd5-4662-ab31-b718d4f64856'
+
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "disarm_alarm"
+
+  action:
+    - service: alarm_control_panel.alarm_disarm
+      entity_id: alarm_control_panel.alarm
+
+        #################################################################
+        ## Enable Alarm
+        #################################################################
+
+- alias: iOS Action - Enable Alarm
+  id: '08982f04-aa86-4e07-b8bb-3ec1576dd156'
+
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "arm_alarm"
+
+  action:
+    - service: alarm_control_panel.alarm_arm_away
+      entity_id: alarm_control_panel.alarm
+
+        #################################################################
+        ## Siren Off
+        #################################################################
+
+- alias: iOS Action - Siren
+  id: 'bbd8d35d-ff53-414e-ab57-bcc1348faf12'
+
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "siren_off"
+
+  action:
+    - service: switch.turn_off
+      entity_id: switch.siren

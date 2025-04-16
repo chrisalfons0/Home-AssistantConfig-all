@@ -1,0 +1,41 @@
+motion:
+  name: Motion Detectors
+  entities:
+    - binary_sensor.guest_room_2_occupancy_2
+    - binary_sensor.guest_room_1_occupancy
+    - binary_sensor.dining_room_occupancy_2
+    - binary_sensor.office_occupancy
+    - binary_sensor.great_room_occupancy_2
+    - binary_sensor.master_bedroom_occupancy_2
+    - binary_sensor.kitchen_occupancy
+
+great_room_occupancy:
+  name: Great Room Occupancy Sensor
+  entities:
+    - binary_sensor.great_room_occupancy_2
+    - binary_sensor.great_room_occupancy
+
+master_bedroom_occupancy:
+  name: Master Bedroom Occupancy Sensor
+  entities:
+    - binary_sensor.master_bedroom_occupancy
+    - binary_sensor.master_bedroom_occupancy_2
+    - binary_sensor.master_bedroom_occupancy_3
+
+office_occupancy:
+  name: Office Occupancy Sensor
+  entities:
+    - binary_sensor.office_occupancy
+    - binary_sensor.office_occupancy_2
+
+guest_office_occupancy:
+  name: Guest Office Occupancy Sensor
+  entities:
+    - binary_sensor.gym_occupancy
+    - binary_sensor.gym_occupancy_3
+
+guest_bedroom_occupancy:
+  name: Guest Bedroom Occupancy Sensor
+  entities:
+    - binary_sensor.guest_room_1_occupancy
+    - binary_sensor.guest_room_1_occupancy_2 

@@ -1,0 +1,23 @@
+
+  #################################################################
+## Lights
+#################################################################
+
+        ##########################################################
+        ## Dining Room
+        ##########################################################
+light.dining_room:
+  icon: mdi:ceiling-light
+  friendly_name: Dining Room Ceiling
+
+light.master_bedroom_can:
+  icon: mdi:light-recessed
+  friendly_name: Master Bedroom Cans
+
+light.master_bedroom_chandelier:
+  icon: mdi:chandelier
+  friendly_name: Master Bedroom Chandelier
+
+group.master_nightstand_light:
+  icon: mdi:lamps
+  friendly_name: Master Bedroom Floor Lamp

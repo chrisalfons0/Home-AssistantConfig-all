@@ -1,0 +1,50 @@
+##############################################################################
+###  Automations - Help Chidi!
+###
+###############################################################################-------------------------------------------
+
+automation:
+  - alias: 'Help Chidi'
+    id: 6548de52-a4a4-4df2-9d66-9c2c15577a7e
+    trigger:
+      - platform: state
+        entity_id: vacuum.chidi
+        to: 'error'
+      - platform: event
+        event_type: event_did_someone_help_chidi_loop
+
+    condition:
+        - condition: state
+          entity_id: vacuum.chidi
+          state: 'error'
+        - condition: state
+          entity_id: input_boolean.disable_roomba
+          state: 'off'
+
+    action:
+      - wait_template: "{{ states.group.family.state == 'home' }}"
+
+      - service: script.speech_engine
+        data:
+          value1: >
+            {% set error =  states.vacuum.chidi.attributes['error'] %}
+            {{ [
+            "Chidi is asking for help.  The error reported is " ~ error + " .  Please find him and help him.",
+            "Please be nice and help Chidi.  He is complaining about " ~ error + ".",
+            "If you don't want to vacuum, you need to help Chidi.  He is complaining about " ~ error +" and needs help.",
+            "Something is wrong with Chidi.  Please find him and help him.  I have detected a " ~ error + " error."
+            ] | random }}
+
+      - service: vacuum.locate
+        entity_id: vacuum.chidi
+
+      - service: script.notify_engine
+        data:
+          title: 'Help Chidi'
+          value1: "{{ states.vacuum.chidi.attributes['error'] }}"
+          who: 'family'
+          apns_id: 'information'
+
+
+      - delay: 00:20:00
+      - event: event_did_someone_help_chidi_loop

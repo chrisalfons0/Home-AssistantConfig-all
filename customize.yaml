@@ -1,0 +1,43 @@
+
+#################################################################
+## Network Sensors
+#################################################################
+
+        ##########################################################
+        ## WAN Sensor
+        ##########################################################
+
+  binary_sensor.wan:
+    icon: mdi:wan
+    friendly_name: Network WAN
+
+        ##########################################################
+        ## Gateway Sensor
+        ##########################################################
+
+  binary_sensor.gateway:
+    icon: mdi:lan
+    friendly_name: Network Gateway
+
+#################################################################
+## Lights
+#################################################################
+
+        ##########################################################
+        ## Dining Room
+        ##########################################################
+
+  light.dining_room
+    icon: mdi:ceiling-light
+    friendly_name: Dining Room Ceiling
+        ##########################################################
+        ## Master Bedroom
+        ##########################################################
+
+  light.master_bedroom_can
+    icon: mdi:light-recessed
+    friendly_name: Master Bedroom Cans
+
+  light.master_bedroom_chandelier
+    icon: mdi:chandelier
+    friendly_name: Master Bedroom Chandelier

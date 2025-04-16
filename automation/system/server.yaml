@@ -1,0 +1,28 @@
+        ##########################################################
+        ## Server Memory Above 50 Percent
+        ##########################################################
+
+- alias: System - Server Memory Above 50 Percent
+  id: 201f79a7-96d7-4b06-a04c-f5650c3e5aed
+
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.memory_use_percent
+      above: 50
+      for:
+        hours: 0
+        minutes: 5
+        seconds: 0
+
+  condition:
+    - condition: state
+      entity_id: input_boolean.disable_notifications
+      state: 'off'
+
+  action:
+    - service: notify.chris_devices
+      data:
+        message: 'Server Memory Above 50%'
+        data:
+          tag: homeassistant
+          group: system
