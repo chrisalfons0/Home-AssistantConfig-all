@@ -1,3 +1,4 @@
+---
 #-------------------------------------------
 # Speech Briefing Macros
 # Description: Contains various macros for generating speech briefings
@@ -10,7 +11,6 @@
 # - Inspirational quotes and facts
 #
 #-------------------------------------------
-
 
 >-
   {%- macro dark_outside() -%}
@@ -128,22 +128,36 @@
         {% endif %}
   {%- endmacro -%}
 
+
   {%- macro uv() -%}
-  {% if states.sensor.dark_sky_uv_index.state|int(9999)>= 6 and states.sensor.dark_sky_uv_index.state|int(9999)<= 7.9 %}
-      Today's UV index is {{ states.sensor.dark_sky_uv_index.state }}.  You should wear sunscreen if going outside.
-  {% elif states.sensor.dark_sky_uv_index.state|int(9999)>= 8 and states.sensor.dark_sky_uv_index.state|int(9999)<=10.9 %}
-      Today's UV index is {{ states.sensor.dark_sky_uv_index.state }}.  This is VERY HIGH. Be sure wear sunscreen and re-apply.
-  {% elif states.sensor.dark_sky_uv_index.state|int(9999)>= 11 %}
-      Today's UV index is {{ states.sensor.dark_sky_uv_index.state }}.  This is EXTREME. You should be very cautious going outside.
+  {% if states.sensor.dark_sky_uv_index.state|int(9999)>= 6 %}
+      Today's UV index is {{ states.sensor.dark_sky_uv_index.state }}. 
+    {%- for entity in states.sensor if 'dark_sky' in entity.entity_id %}
+        {%- set state = entity.state %}
+        {%- set unit = entity.attributes.unit_of_measurement if 'unit_of_measurement' in entity.attributes else '' %}
+        {%- set friendly_name = ' '.join(entity.attributes.friendly_name.split(' ')[1:]) %}
+        {%- if state not in ['0', '0.0', 'none'] and 'UV Index' not in friendly_name %}
+        {%- if 'Temperature' in friendly_name -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- elif 'Minutely' in friendly_name -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- elif 'Cloud Coverage' in friendly_name and state | float > 75 -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- elif 'Humidity' in friendly_name and (state | float < 50 or state | float > 85) -%}
+            {{ friendly_name }}: {{ state }} {{ unit }}
+        {%- endif -%}
+        {%- endif %}
+    {% endfor -%}
+      [Give helpful tip based on the current UV index and weather conditions]
   {% endif %}
   {%- endmacro -%}
 
   {% macro inspirational_quote() %}
-        [Include an inspirational quote relevant to the day or situation at the end of the message. "]
+        [Include an inspirational quote relevant to the day or situation at the end of the message "]
   {% endmacro %}
 
   {% macro fact_of_the_day() %}
-        [Include a fact about something that happened in the past on this day at the end of the message]
+        [Include a relevant fact about something that happened in the past on this day at the end of the message]
   {% endmacro %}
 
   {# a macro that removes all newline characters, empty spaces, and returns formatted text and replaces underscores with spaces  #}
@@ -170,10 +184,17 @@
     {% set time = current_date.strftime('%I:%M %p') %}
     Current date time: {{ month }} {{ day }}, {{ year }} {{ time }}
     Residents: Location
-    - Chris: {{ states('person.chris') }} at {{ states('sensor.chris_place') if states('sensor.chris_place') != unknown else 'Away' }}
-    and our dogs Harper and Theo: Always home.
+    - Chris:
+      {%- if states('sensor.chris_place') != 'unknown' %}
+        {{ states('sensor.chris_place') }}
+      {% else -%}
+        Away
+      {% endif -%}
+      {% if range(1, 100) | random <= 25 %}
+      and our dogs Harper and Theo: Always home.
+      {% endif %}      
     Previous broadcast: "{{ state_attr('sensor.openai_response', 'response') }}"
-    [Announce where the Residents location is if they are not at home. Avoid repeating information from the Previous broadcast if it was within the hour]
+     [For each person, mention their location. If the same location update has already been broadcasted, do not repeat it.]
 
     New Information:
     {% if call_no_announcement != 1 %}

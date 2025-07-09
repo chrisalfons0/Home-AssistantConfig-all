@@ -4,21 +4,20 @@
 
 - alias: 'Shut down AMP in Great room'
   id: 3b41321c-8242-4cf5-9a93-b2b7aeeb8ea0
+  mode: single
   trigger:
     - platform: time
       at: '22:30:00'
 
   action:
     - wait_template: >-
-       {{ not is_state('media_player.master_bedroom_speakers', 'playing') }}
-    - wait_template: >-
-       {{ not is_state('media_player.dining_room_speakers', 'playing') }}
-    - wait_template: >-
-       {{ not is_state('media_player.deck_speakers', 'playing') }}
-    - wait_template: >-
-       {{ not is_state('media_player.whole_house', 'playing') }}
-    - wait_template: >-
-       {{ not is_state('media_player.indoors', 'playing') }}
+        {{
+          not is_state('media_player.master_bedroom_speakers', 'playing') and
+          not is_state('media_player.dining_room_speakers', 'playing') and
+          not is_state('media_player.deck_speakers', 'playing') and
+          not is_state('media_player.whole_house', 'playing') and
+          not is_state('media_player.indoors', 'playing')
+        }}
     - service: script.speech_engine
       data:
         call_no_announcement: 1

@@ -10,9 +10,8 @@
       at: '06:30:00'
 
   condition:
-    - condition: state
-      entity_id: group.family
-      state: home
+    - condition: template
+      value_template: "{{ states('group.family') == 'home' }}"
 
 
   action:

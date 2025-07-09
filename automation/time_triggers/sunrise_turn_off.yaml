@@ -23,5 +23,3 @@
     - service: input_boolean.turn_off
       entity_id:
         - input_boolean.guest_mode
-    - service: homeassistant.update_entity  #Look for a new Home Assistant Version
-      entity_id: binary_sensor.updater

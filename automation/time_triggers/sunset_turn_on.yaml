@@ -24,12 +24,15 @@
 #      entity_id:
 #        - light.outdoor_backyard_lights
 #        - light.outdoor_frontyard_lights
-    - service: light.turn_on
-      data:
-            entity_id: light.porch_lights
-            entiry_id: light.deck_lights
+    - service: homeassistant.turn_on
+      entity_id: 
+         - light.porch_lights
+         - light.string_lights
+         - light.deck_lights
     - wait_template: >-
        {{ states.group.family.state == 'home' }}
+      timeout: '00:10:00'
+      continue_on_timeout: false
     - service: light.turn_on
       entity_id:
        - light.great_room_accent_lights

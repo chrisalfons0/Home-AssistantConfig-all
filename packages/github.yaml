@@ -1,3 +1,4 @@
+---
 #-------------------------------------------
 #sensor:
 #  - platform: travisci
@@ -16,31 +17,3 @@ rest_command:
       Authorization: !secret github_token
     payload: '{"title":"Home-Assistant {{ version }} available","body":"Home-Assistant {{ version }} is now available"}'
 #-------------------------------------------
-
-#automation:
-
-automation:
-
-  - alias: "Update Available Notification"
-    mode: restart
-    id: 2f89ba6d-0db5-4a4a-a4df-56b8e15bb74f
-
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.updater
-        to: 'on'
-
-    action:
-      - service: script.notify_engine
-        data:
-          title: 'Home Assistant {{ states.binary_sensor.updater.attributes.newest_version }} '
-          value1: "Home Assistant {{ states.binary_sensor.updater.attributes.newest_version }} is now available."
-          who: 'chris'
-          apns_id: 'information'
-
-      # - service: ifttt.trigger
-      #   data: {"event":"GitPost", "value1":"Home Assistant {{ states.binary_sensor.updater.attributes.newest_version }}  is now available.", "value2":"{{ states.binary_sensor.updater.attributes.newest_version }} "}
-
-      - service: rest_command.new_version_github_issue
-        data:
-          version: "{{ states.binary_sensor.updater.attributes.newest_version }} "

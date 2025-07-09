@@ -369,43 +369,6 @@
 
 
         ##########################################################
-        ## Turn on Christmas Tree when Lupe Home
-        ##########################################################
-
-- alias: Christmas - Turn on Christmas Tree when Lupe Home
-  id: 28ccb0ff-5de7-446a-9e12-e579f49d6774
-
-  trigger:
-    - platform: state
-      entity_id: person.lupe
-      from: 'not_home'
-      to: 'home'
-      for:
-        hours: 0
-        minutes: 0
-        seconds: 30
-
-  condition:
-    - condition: state
-      entity_id: input_boolean.disable_home_away
-      state: 'off'
-    - condition: time
-      after: '08:30'
-      before: '16:00'
-    - condition: state
-      entity_id: switch.christmas_tree
-      state: 'off'
-    - condition: state
-      entity_id: input_select.holiday
-      state: 'Halloween'
-
-  action:
-    - service: switch.turn_on
-      entity_id:
-        - switch.christmas_tree
-
-
-        ##########################################################
         ## Late Night TV Watching before Midnight Christmas Tree on
         ##########################################################
 

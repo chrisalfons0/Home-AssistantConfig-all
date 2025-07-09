@@ -1,14 +1,14 @@
     
 ######################################################################
-##  Stuff that needs to happen when we are both out of bed.
+##  Stuff that needs to happen when we are out of bed
 ######################################################################
 
 - alias: 'Time to wake up!'
   id: 16a3b9c5-1faa-410e-a7e1-249a9f861e07
   trigger:
     - platform: state
-      entity_id: group.bed
-      to: 'off'
+      entity_id: binary_sensor.master_bedroom_door
+      to: 'on'
 
   condition:
     - condition: state
@@ -21,8 +21,10 @@
       after: '07:00:00'
       before: '11:00:00'
   action:
-    - service: light.turn_on
+    - service: homeassistant.turn_on
       entity_id:
-        - light.kitchen_island_light_new
-    - service: switch.turn_on
-      entity_id: switch.lr_amp
+        - switch.amps
+        - light.kitchen_lights
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.good_morning
+    

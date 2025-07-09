@@ -29,7 +29,7 @@
   actions:
     - action: homeassistant.turn_off
       entity_id: input_boolean.thermostat_away
-    - delay: '00:00:30'
+#    - delay: '00:00:30'
 #    - action: ecobee.set_fan_min_on_time
 #      data:
 #        entity_id: climate.main_floor
@@ -117,11 +117,11 @@
     - action: climate.set_preset_mode
       data:
         entity_id: climate.hallway
-        preset_mode: 'away'
+        preset_mode: 'away_indefinitely'
     - action: climate.set_preset_mode
       data:
         entity_id: climate.dining_room
-        preset_mode: 'away'
+        preset_mode: 'away_indefinitely'
         ##########################################################
         ## Turn Thermostat On Summer
         ##########################################################
@@ -517,7 +517,7 @@
     - action: climate.set_preset_mode
       data:
         entity_id: climate.dining_room
-        preset_mode: 'guest'
+        preset_mode: 'Guest'
 
         ##########################################################
         ## Adjust Thermostat for Overnight Guests after Midnight
@@ -548,50 +548,6 @@
         entity_id: climate.dining_room
         preset_mode: 'Guest'
 
-        ##########################################################
-        ## Reset Thermostat when Lupe Leaves
-        ##########################################################
-
-- alias: Climate - Reset Thermostat when Lupe Leaves
-  id: 855f8942-e441-4d5e-b9a1-7aac7df0dc19
-
-  trigger:
-    - platform: state
-      entity_id: person.lupe
-      from: 'home'
-      to: 'not_home'
-
-  condition:
-    - condition: time
-      after: '06:00:00'
-      before: '07:30:00'
-    - condition: state
-      entity_id: input_boolean.disable_home_away
-      state: 'off'
-    - condition: state
-      entity_id: input_boolean.thermostat_away
-      state: 'off'
-    - condition: state
-      entity_id: input_boolean.disable_climate
-      state: 'off'
-    - condition: time
-      weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
-
-  actions:
-    - action: ecobee.resume_program
-      data:
-        entity_id: climate.dining_room
-        resume_all: true
-
-    - action: ecobee.resume_program
-      data:
-        entity_id: climate.hallway
-        resume_all: true
         ##########################################################
         ## Reset Thermostat Mode After Selection
         ##########################################################
@@ -683,9 +639,9 @@
     - condition: state
       entity_id: sensor.season
       state: 'summer'
-    - condition: state
-      entity_id: sensor.thermostat_climate_mode
-      state: 'Home'
+#    - condition: state
+#      entity_id: sensor.thermostat_climate_mode
+#      state: 'Home'
 
   actions:
     - action: climate.set_temperature
@@ -726,9 +682,9 @@
     - condition: state
       entity_id: group.family
       state: 'home'
-    - condition: state
-      entity_id: sensor.thermostat_climate_mode
-      state: 'Temperature Hold'
+#    - condition: state
+#      entity_id: sensor.thermostat_climate_mode
+#      state: 'Guest'
     - condition: state
       entity_id: sensor.season
       state: 'summer'
@@ -743,42 +699,6 @@
         entity_id: climate.dining_room
         resume_all: true
 
-- alias: Climate - Turn on once windows closed
-  id: 9e20244f-d86d-498d-82c2-450039bd48d8
-
-  trigger:
-    - platform: state
-      entity_id: group.entry_points
-      from: 'on'
-      to: 'off'
-      for:
-        hours: 0
-        minutes: 5
-        seconds: 0
-
-  condition:
-    - condition: state
-      entity_id: input_boolean.thermostat_away
-      state: 'off'
-    - condition: state
-      entity_id: input_boolean.disable_climate
-      state: 'off'
-    - condition: state
-      entity_id: climate.dining_room
-      state: 'off'
-    - condition: state
-      entity_id: climate.hallway
-      state: 'off'
-
-  actions:
-    - action: climate.set_hvac_mode
-      data:
-        entity_id: climate.hallway
-        hvac_mode: heat_cool
-    - action: climate.set_hvac_mode
-      data:
-        entity_id: climate.dining_room
-        hvac_mode: heat_cool
 
 
 - alias: 'Turn off HVAC in window/door is opened'
@@ -790,7 +710,7 @@
       to: 'on'
       from: 'off'
       for:
-        minutes:
+        minutes: 5
 
   actions:
     - action: climate.turn_off
@@ -829,7 +749,7 @@
       to: 'off'
       from: 'on'
       for:
-        minutes: 5
+        minutes: 1
 
   conditions:
   - condition: or
@@ -958,10 +878,10 @@
     - action: climate.set_preset_mode
       data:
         entity_id: climate.dining_room
-        preset_mode: 'guest'
+        preset_mode: 'Guest'
     - action: climate.set_preset_mode
       data:
         entity_id: climate.hallway
-        preset_mode: 'guest'
+        preset_mode: 'Guest'
     - action: homeassistant.turn_off
       entity_id: input_boolean.thermostat_away

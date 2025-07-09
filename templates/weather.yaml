@@ -51,3 +51,41 @@
       device_class: humidity
       state: >
         {{ states('sensor.current_attic_humidity_raw') }}
+        
+
+
+      ##########################################################
+      ## Thermostat
+      ##########################################################
+
+  - sensor:
+    - unique_id: d0ccafc9-f5d8-478e-a0dc-f485b450c157
+      name: Thermostat Climate Mode
+      state: '{{ states.climate.hallway.attributes.preset_mode }}'
+      
+
+      ##########################################################
+      ## Outdoor Temperature Ranges
+      ##########################################################
+
+  - sensor:
+    - unique_id: a40e3471-a29d-4ee0-8edf-2b22c0e28889
+      name: Outdoor Temp Range
+      state: >
+        {% if states('sensor.dark_sky_temperature') | int >= 90 %}
+          temp-hot
+        {% elif states('sensor.dark_sky_temperature') | int >= 82 %}
+          temp-warmer
+        {% elif states('sensor.dark_sky_temperature') | int >= 76 %}
+          temp-warm
+        {% elif states('sensor.dark_sky_temperature') | int >= 60 %}
+          temp-norm
+        {% elif states('sensor.dark_sky_temperature') | int >= 45 %}
+          temp-cool
+        {% elif states('sensor.dark_sky_temperature') | int >= 33 %}
+          temp-cooler
+        {% elif states('sensor.dark_sky_temperature') | int <= 32 %}
+          temp-cold
+        {% else %}
+          temp-norm
+        {% endif %}

@@ -10,18 +10,18 @@ friends:
 
 extendend_family:
   entities:
-   - person.tata
+    - person.tata
 
 friends_and_family:
   entities:
     - group.friends
     - group.extendend_family
+    - group.overnight_guesta
 
 overnight_guests:
   entities:
     - person.dog_sitters
     - person.samantha
-    
 
 arriving:
   name: Arriving

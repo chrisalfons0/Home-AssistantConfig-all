@@ -18,6 +18,9 @@
     - condition: state
       entity_id: input_boolean.disable_startup_notifications
       state: 'off'
+    - condition: state
+      entity_id: input_boolean.power_was_lost
+      state: 'on'   
 
   action:
     - service: script.notify_engine
@@ -27,7 +30,9 @@
         ios_category: "UPS"
         who: 'family'
         apns_id: 'Alert'
-
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.power_was_lost
+      
         ##########################################################
         ## UPS Power Loss Alert iOS Notification
         ##########################################################
@@ -54,6 +59,8 @@
         ios_category: "UPS"
         who: 'family'
         apns_id: 'Alert'
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.power_was_lost    
 
         ##########################################################
         ## UPS Low Battery Alert iOS Notification

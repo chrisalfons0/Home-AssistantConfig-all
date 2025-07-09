@@ -16,7 +16,7 @@ automation:
           - lock.frontdoor_lock
         from: 'unlocked'
         to: 'locked'
-        for: '00:00:30'
+        for: '00:01:30'
 
     action:
       - service: script.speech_engine

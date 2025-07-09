@@ -22,8 +22,6 @@
         who: 'chris'
         apns_id: 'information'
 
-    - service: homeassistant.update_entity
-      entity_id: binary_sensor.updater
 
 #    - service: mqtt.publish
 #      data:

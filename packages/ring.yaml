@@ -2,27 +2,29 @@ automation:
   ######################################################################
   ##  Ring DoorBell Announcements - Only during normal hours.
   ######################################################################
-  - alias: 'Someone Rang the Door Announcement'
+  - alias: "Someone Rang the Door Announcement"
     id: a4294b3b-51f3-4e32-8e71-b9ef865acc3b
     trigger:
       - platform: state
-        entity_id:
-          - binary_sensor.front_door_ding
-        to: 'on'
+        entity_id: event.front_door_ding
+        not_to:
+          - unknown
+          - unavailable
+
     condition:
       - condition: state
         entity_id: input_boolean.disable_doorbell
-        state: 'off'
+        state: "off"
     action:
       - service: script.speech_engine
         data:
-           value1: >
-              {{ [
-              "Please check the Front Door.  Someone Pressed the Doorbell.",
-              "Quick! Hide! Someone just pressed the Doorbell!",
-              "Someone answer my door.  Someone just pressed the doorbell.",
-              "Ding Dong, get to the door before they run away!",
-              "Did anyone else hear that? Time to go check the door.",
-              "Knock, Knock. Someone just rang the doorbell."
-              ] | random }}
+          value1: >
+            {{ [
+            "Please check the Front Door.  Someone Pressed the Doorbell.",
+            "Quick! Hide! Someone just pressed the Doorbell!",
+            "Someone answer my door.  Someone just pressed the doorbell.",
+            "Ding Dong, get to the door before they run away!",
+            "Did anyone else hear that? Time to go check the door.",
+            "Knock, Knock. Someone just rang the doorbell."
+            ] | random }}
       - service: script.flash_notify

@@ -10,9 +10,6 @@ automation:
 
     condition:
       - condition: state
-        entity_id: person.lupe
-        state: 'home'
-      - condition: state
         entity_id: switch.desk_lamp
         state: 'off'
       - condition: state

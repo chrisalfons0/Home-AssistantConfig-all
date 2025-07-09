@@ -2,41 +2,40 @@
 ## Doorbell Automations
 #################################################################
 
-        ##########################################################
-        ## Front Door Camera TV when Doorbell Rings
-        ##########################################################
+##########################################################
+## Front Door Camera TV when Doorbell Rings
+##########################################################
 
 - alias: Doorbell - Front Door Camera TV when Doorbell Rings
   id: f72ded91-37cd-4910-815b-0023e1ddc32f
 
   trigger:
     - platform: state
-      entity_id: binary_sensor.front_door_ding
-      from: 'off'
-      to: 'on'
+      entity_id: event.front_door_ding
+      from: null
 
   condition:
     - condition: state
       entity_id: group.family
-      state: 'home'
+      state: "home"
     - condition: state
       entity_id: input_boolean.disable_doorbell
-      state: 'off'
+      state: "off"
     - condition: or
       conditions:
-      - condition: state
-        entity_id: select.greatroom_activities
-        state: 'Watch Smart TV'
-      - condition: state
-        entity_id: select.greatroom_activities
-        state: 'Listen to Music'
+        - condition: state
+          entity_id: select.greatroom_activities
+          state: "Watch Smart TV"
+        - condition: state
+          entity_id: select.greatroom_activities
+          state: "Listen to Music"
 
   action:
     - service: select.select_option
       target:
-          entity_id: select.greatroom_activities
+        entity_id: select.greatroom_activities
       data:
-          option: "power_off"
+        option: "power_off"
 
         ##########################################################
         ## Front Door Camera TV when Doorbell Rings and Motion Detected
@@ -47,71 +46,67 @@
   mode: single
   trigger:
     - platform: state
-      entity_id: binary_sensor.front_door_ding
-      from: 'off'
-      to: 'on'
+      entity_id: event.front_door_ding
 
   condition:
     - condition: state
       entity_id: group.family
-      state: 'home'
+      state: "home"
     - condition: state
       entity_id: input_boolean.disable_doorbell
-      state: 'off'
+      state: "off"
     - condition: state
       entity_id: select.greatroom_activities
-      state: 'powerOff'
+      state: "powerOff"
     - condition: time
-      after: '08:00:00'
-      before: '21:00:00'
+      after: "08:00:00"
+      before: "21:00:00"
     - condition: or
       conditions:
-      - condition: state
-        entity_id: binary_sensor.great_room_occupancy_2
-        state: 'on'
-      - condition: state
-        entity_id: binary_sensor.great_room_occupancy
-        state: 'on'
+        - condition: state
+          entity_id: binary_sensor.great_room_occupancy_2
+          state: "on"
+        - condition: state
+          entity_id: binary_sensor.great_room_occupancy
+          state: "on"
 
   action:
     - service: select.select_option
       target:
-          entity_id: select.greatroom_activities
+        entity_id: select.greatroom_activities
       data:
-          option: "Security Cams"
-    - delay: '00:02:00'
+        option: "Security Cams"
+    - delay: "00:02:00"
     - service: select.select_option
       target:
-          entity_id: select.greatroom_activities
+        entity_id: select.greatroom_activities
       data:
-          option: "power_off"
+        option: "power_off"
 
 #################################################################
 ## Notifications
 #################################################################
 
-        ##########################################################
-        ## Doorbell Ring Chris Notification
-        ##########################################################
+##########################################################
+## Doorbell Ring Chris Notification
+##########################################################
 
 - alias: Doorbell - Ring Chris Notification
   id: de90d1a2-bd63-4088-9da5-a3874c78f6ee
   mode: single
   trigger:
     - platform: state
-      entity_id: binary_sensor.front_door_ding
-      from: 'off'
-      to: 'on'
+      entity_id: event.front_door_ding
 
   condition:
     - condition: state
       entity_id: input_boolean.disable_notifications
-      state: 'off'
+      state: "off"
 
   action:
     - service: script.notify_engine
       data:
-        who: 'chris'
+        who: "chris"
         value1: "Someone is at the Front Door"
         data:
           tag: doorbell

@@ -69,6 +69,12 @@ speech_processing:
           {{ speech_message }}
       response_variable: agent
 
+    # --- Wait for speaker to be idle before speaking (Fix #1) ---
+    - wait_template: >
+        {{ is_state(media_player, 'idle') }}
+      timeout: '00:00:10'
+      continue_on_timeout: true
+
     - service: tts.cloud_say
       data:
         entity_id: >
@@ -84,6 +90,9 @@ speech_processing:
         message: >-
               {{ agent.response.speech.plain.speech }}
         cache: false
+
+    # --- Brief delay to let the speaker finish up ---
+    - delay: "00:00:02"
 
     - event: openai_response
       event_data:
